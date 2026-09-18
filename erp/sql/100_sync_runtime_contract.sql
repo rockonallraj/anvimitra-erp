@@ -1,6 +1,7 @@
 -- Sync runtime contract hardening. Kept at 100 so teacher permission tables
 -- (038) exist before any later sync permission triggers are installed.
 ALTER TABLE sync_changes
+  ADD COLUMN IF NOT EXISTS operation VARCHAR(50) NOT NULL DEFAULT 'upsert',
   ADD COLUMN IF NOT EXISTS device_id UUID REFERENCES sync_devices(id) ON DELETE SET NULL,
   ADD COLUMN IF NOT EXISTS client_change_id VARCHAR(200),
   ADD COLUMN IF NOT EXISTS base_cursor BIGINT NOT NULL DEFAULT 0;
