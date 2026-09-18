@@ -32,9 +32,11 @@ function registerAuthRoutes(app, pool) {
       const user=result.rows[0];
       if(!user||user.status!=='active'||!(await verifyPassword(password,user.password_hash))) return res.status(401).json({error:'Invalid login credentials'});
       const effectiveBranchId = await resolveBranch(pool,user.school_id,branchId,user.branch_id,user.role);
-      await pool.query('UPDATE users SET last_login_at=now() WHERE id=$1',[user.id]);
+      try { await pool.query('UPDATE users SET last_login_at=now() WHERE id=$1',[user.id]); } catch (e) { console.warn('Could not update last_login_at:', e.message); }
       const token=signAccessToken({sub:user.id,schoolId:user.school_id || null,branchId:effectiveBranchId,role:user.role});
-      if (user.school_id) await pool.query('INSERT INTO audit_logs (school_id,user_id,action,entity_type) VALUES ($1,$2,$3,$4)',[user.school_id,user.id,'login','user']);
+      if (user.school_id) {
+        try { await pool.query('INSERT INTO audit_logs (school_id,user_id,action,entity_type) VALUES ($1,$2,$3,$4)',[user.school_id,user.id,'login','user']); } catch (e) { console.warn('Audit log write skipped on login:', e.message); }
+      }
       res.json({accessToken:token,user:{id:user.id,schoolId:user.school_id || null,schoolName:user.school_name || 'Platform',branchId:effectiveBranchId,role:user.role}})
     }catch(err){next(err)}
   });

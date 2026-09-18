@@ -39,6 +39,7 @@ async function main() {
   const createdAdminPassword = 'School-12345!';
   let child;
   let createdId;
+  let childLogs = '';
 
   try {
     const school = await client.query(
@@ -68,6 +69,8 @@ async function main() {
       env: { ...process.env, PORT: '4183', NODE_ENV: 'test', DATABASE_URL: db, JWT_SECRET: process.env.JWT_SECRET || 'e2e-test-secret-at-least-32-characters-long' },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
+    child.stdout.on('data', d => { childLogs += d.toString(); });
+    child.stderr.on('data', d => { childLogs += d.toString(); });
 
     await waitForHealth();
 
@@ -172,6 +175,11 @@ async function main() {
     if (createdId) await client.query("UPDATE schools SET status='inactive' WHERE id=$1", [createdId]).catch(() => {});
     await client.query("UPDATE schools SET status='inactive' WHERE code=$1", [seedCode]).catch(() => {});
     await client.end().catch(() => {});
+    if (childLogs.trim()) {
+      console.log('--- Server Logs ---');
+      console.log(childLogs.trim());
+      console.log('-------------------');
+    }
   }
 }
 

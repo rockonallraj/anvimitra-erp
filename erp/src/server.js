@@ -41,6 +41,6 @@ if(pool){
   try{require('./notification_worker').startNotificationWorker(pool)}catch(_){console.warn('Notification worker unavailable')}
   try{require('./push_worker').startPushWorker(pool)}catch(_){console.warn('Push worker unavailable')}
 } else app.post('/api/auth/login',(_req,res)=>res.status(503).json({error:'Database is not configured'}));
-app.use((err,_req,res,_next)=>{console.error(err);const status=[400,401,403,404,409,422].includes(err?.statusCode)?err.statusCode:500;res.status(status).json({error:status<500?(err.message||'Request failed'):'Internal server error'})});
+app.use((err,_req,res,_next)=>{console.error(err);const status=[400,401,403,404,409,422].includes(err?.statusCode)?err.statusCode:500;res.status(status).json({error:(process.env.NODE_ENV==='production'&&status>=500)?'Internal server error':(err.message||'Request failed')})});
 if(require.main===module)app.listen(port,()=>console.log('Anvi Mitra ERP API listening on '+port));
 module.exports={app,pool};
