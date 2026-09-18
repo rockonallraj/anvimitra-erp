@@ -1,0 +1,22 @@
+{
+  "name": "anvi-mitra-erp-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Anvi Mitra multi-school ERP API and web portal",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "check": "node -e \"const fs=require('fs'),{execFileSync}=require('child_process');fs.readdirSync('src').filter(f=>f.endsWith('.js')).forEach(f=>execFileSync(process.execPath,['--check','src/'+f]))\"",
+    "test": "node -e \"const fs=require('fs'),{execFileSync}=require('child_process');fs.readdirSync('tests').filter(f=>f.endsWith('.test.js')).sort().forEach(f=>{process.stdout.write('Running '+f+'... ');execFileSync(process.execPath,['tests/'+f],{stdio:['pipe','pipe','inherit']});console.log('PASS')})\"",
+    "migrate": "node src/migrate.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  }
+}

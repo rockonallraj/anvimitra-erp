@@ -1,0 +1,16 @@
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const organization = fs.readFileSync(path.join(__dirname, '..', 'src', 'organization.js'), 'utf8');
+const platformSchools = fs.readFileSync(path.join(__dirname, '..', 'src', 'platform_school_management.js'), 'utf8');
+const auth = fs.readFileSync(path.join(__dirname, '..', 'src', 'auth.js'), 'utf8');
+const schoolUi = fs.readFileSync(path.join(__dirname, '..', 'web', 'super-admin', 'schools.html'), 'utf8');
+assert(organization.includes("app.get('/api/public/school-config'"));
+assert(platformSchools.includes("app.post('/api/platform/schools'"));
+assert(platformSchools.includes("app.patch('/api/platform/schools/:id'"));
+assert(platformSchools.includes("app.post('/api/platform/schools/:id/logo'"));
+assert(platformSchools.includes("app.get('/api/platform/schools/:id'"));
+for(const token of ['await hashPassword(adminPassword)','adminEmail','adminPhone','mobile_app_configs','school_settings','branches','INSERT INTO users','adminRole']) assert(platformSchools.includes(token));
+for(const token of ['schoolId','branchId','resolveBranch']) assert(auth.includes(token));
+for(const token of ['School Management','Add School','Create School + Admin','Admin email','Admin password','/api/platform/schools','navigator.onLine','cached data and pending changes']) assert(schoolUi.includes(token));
+console.log('ERP school provisioning/UI contract checks: PASS');
