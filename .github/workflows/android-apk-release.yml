@@ -14,6 +14,9 @@ on:
   push:
     tags:
       - 'v*'
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-apk-release.yml'
 
 permissions:
   contents: write
@@ -33,18 +36,15 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Grant Execute Permission to Gradlew
-        run: |
-          chmod +x android/gradlew
-          chmod +x android/gradlew.bat
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
 
       - name: Build Release APK
         working-directory: android
         run: |
-          ./gradlew assembleRelease --stacktrace --no-daemon
+          gradle assembleRelease --stacktrace --no-daemon
 
       - name: Locate & Rename APK
         run: |
