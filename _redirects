@@ -1,17 +1,10 @@
-# Cloudflare Pages / Workers Redirects
-# NOTE: In Cloudflare, 200 proxy rules can only point to relative paths.
-# API requests (/api/*) are handled dynamically by Cloudflare Pages Function (functions/api/[[catchall]].js)
-# which proxies requests to your backend without CORS restrictions.
+# Cloudflare Workers / Pages Route Aliases
+# Self-referential .html rules are omitted because Cloudflare Assets natively maps extensionless URLs to .html files.
 
-# Portal Route Aliases
-/super-admin/schools        /erp/web/super-admin-schools.html  200
-/super-admin/sync-admin     /erp/web/sync-admin.html           200
-/super-admin/local-storage  /erp/web/local-storage.html        200
-/attendance                 /attendance.html                   200
-/attendance-report          /attendance-report.html            200
-/fees                       /fee-management.html               200
-/exams                      /exam-management.html              200
-/admissions                 /admissions.html                   200
-/parent                     /parent-dashboard.html             200
-/student                    /portal-dashboard.html             200
-/login                      /login.html                        200
+/super-admin/schools        /erp/web/super-admin-schools       200
+/super-admin/sync-admin     /erp/web/sync-admin                200
+/super-admin/local-storage  /erp/web/local-storage             200
+/fees                       /fee-management                    200
+/exams                      /exam-management                   200
+/parent                     /parent-dashboard                  200
+/student                    /portal-dashboard                  200

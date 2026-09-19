@@ -1,1 +1,432 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Anvi Mitra ERP — Login</title><style>:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172033;background:#f4f7fb;--primary:#172b55;--secondary:#14b8a6}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 15% 10%,color-mix(in srgb,var(--secondary) 12%,transparent),transparent 35%),#f4f7fb;transition:background .4s ease}.box{width:min(440px,92vw);background:#fff;border:1px solid #e1e6ef;border-radius:22px;padding:28px;box-shadow:0 18px 60px #15203b14;animation:rise .45s ease both}.brandrow{display:flex;align-items:center;gap:12px}.logo{width:56px;height:56px;border-radius:14px;object-fit:contain;background:#f2f5f9}.brand{font-size:24px;font-weight:800}.sub{color:#667085;font-size:14px;margin:6px 0 24px}label{display:block;font-size:13px;font-weight:650;margin:14px 0 6px}input,select,button{width:100%;padding:12px;border:1px solid #d9dee8;border-radius:9px;font:inherit}input:focus,select:focus{outline:none;border-color:var(--secondary);box-shadow:0 0 0 3px color-mix(in srgb,var(--secondary) 18%,transparent)}button{margin-top:18px;background:linear-gradient(100deg,var(--primary),var(--secondary));color:#fff;border:0;cursor:pointer;font-weight:800;transition:transform .18s,filter .18s}button:hover{transform:translateY(-1px);filter:brightness(1.04)}.msg{margin-top:14px;font-size:13px;color:#667085}.hint{font-size:11px;color:#667085;margin-top:6px}.status{font-size:11px;margin-top:10px;color:#667085;min-height:16px}@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}</style></head><body><form class="box" id="login"><div class="brandrow"><img id="logo" class="logo" alt="School logo" hidden><div><div class="brand" id="brand">Anvi Mitra ERP</div><div class="sub" id="sub">Secure multi-school management portal</div></div></div><label>School Code</label><input id="schoolCode" autocomplete="organization" required><div class="status" id="schoolStatus"></div><label>Email / Phone</label><input id="loginId" autocomplete="username" required><label>Password</label><input id="password" type="password" autocomplete="current-password" required><label>Login as</label><select id="role"><option value="super_admin">Super Admin</option><option value="principal">Principal</option><option value="admin" selected>Admin / Office</option><option value="teacher">Teacher</option><option value="accountant">Accountant</option><option value="office_staff">Office Staff</option><option value="parent">Parent</option><option value="student">Student</option><option value="driver">Driver</option></select><div class="hint">Your account's server-side role is authoritative; this selection is only for the login experience.</div><button>Sign in</button><div class="msg" id="msg"></div></form><script>const form=document.getElementById('login'),code=document.getElementById('schoolCode'),brand=document.getElementById('brand'),sub=document.getElementById('sub'),logo=document.getElementById('logo'),schoolStatus=document.getElementById('schoolStatus'),msg=document.getElementById('msg');const allowed=new Set(['super_admin','principal','admin','teacher','accountant','office_staff','parent','student','driver']);let configTimer;async function loadSchoolConfig(){const value=code.value.trim();if(!value){schoolStatus.textContent='';return}schoolStatus.textContent='Loading school branding…';try{const r=await fetch('/api/public/school-config?schoolCode='+encodeURIComponent(value));const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'School not found');const s=d.school||{};brand.textContent=s.displayName||s.name||'Anvi Mitra ERP';sub.textContent=s.appName?s.appName+' • Secure management portal':'Secure multi-school management portal';if(s.logoUrl){logo.src=s.logoUrl;logo.hidden=false}else{logo.hidden=true}if(s.primaryColor)document.documentElement.style.setProperty('--primary',s.primaryColor);if(s.secondaryColor)document.documentElement.style.setProperty('--secondary',s.secondaryColor);schoolStatus.textContent='✓ '+(s.name||'School')+' connected';schoolStatus.style.color='var(--secondary)';}catch(e){schoolStatus.textContent=e.message;schoolStatus.style.color='#b42318';}}code.addEventListener('change',loadSchoolConfig);code.addEventListener('blur',loadSchoolConfig);form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='Signing in…';try{const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({login:document.getElementById('loginId').value,password:document.getElementById('password').value,schoolCode:code.value})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Login failed');if(!d.accessToken)throw new Error('Login response did not contain an access token');const actual=String(d.user?.role||'').toLowerCase();if(!allowed.has(actual))throw new Error('This account has an unsupported ERP role');sessionStorage.setItem('lsk_access_token',d.accessToken);sessionStorage.setItem('lsk_user',JSON.stringify(d.user||{}));if(actual==='parent')location.href='/erp/web/parent-dashboard.html';else location.href='/erp/web/portal-dashboard.html?role='+encodeURIComponent(actual)}catch(err){msg.textContent=err.message||'Login failed'}});clearTimeout(configTimer);</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Anvi Mitra ERP — Login</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      color: #172033;
+      background: #f4f7fb;
+      --primary: #172b55;
+      --secondary: #0d9488;
+      --border: #e1e6ef;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 15% 10%, color-mix(in srgb, var(--secondary) 12%, transparent), transparent 35%), #f4f7fb;
+      padding: 16px;
+    }
+    .box {
+      width: min(450px, 94vw);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 30px;
+      box-shadow: 0 18px 60px #15203b14;
+      animation: rise .45s ease both;
+    }
+    .brandrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      object-fit: contain;
+      background: #f2f5f9;
+      border: 1px solid var(--border);
+    }
+    .brand {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .sub {
+      color: #667085;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 650;
+      margin: 14px 0 6px;
+      color: #344054;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d9dee8;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--secondary) 18%, transparent);
+    }
+    .btn-submit {
+      margin-top: 20px;
+      background: linear-gradient(100deg, var(--primary), var(--secondary));
+      color: #fff;
+      border: 0;
+      cursor: pointer;
+      font-weight: 750;
+      transition: transform .18s, filter .18s;
+    }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+    .btn-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .msg {
+      margin-top: 14px;
+      font-size: 13px;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+    .msg.error {
+      display: block;
+      background: #fef3f2;
+      color: #b42318;
+      border: 1px solid #fecdca;
+    }
+    .msg.info {
+      display: block;
+      background: #eff8ff;
+      color: #175cd3;
+      border: 1px solid #b2ddff;
+    }
+    .msg.success {
+      display: block;
+      background: #ecfdf3;
+      color: #027a48;
+      border: 1px solid #a6f4c5;
+    }
+    .hint {
+      font-size: 11px;
+      color: #667085;
+      margin-top: 6px;
+    }
+    .status {
+      font-size: 12px;
+      margin-top: 6px;
+      color: #667085;
+      min-height: 16px;
+    }
+    .cred-banner {
+      margin-top: 20px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid #eaecf0;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #475467;
+      line-height: 1.5;
+    }
+    .cred-banner b { color: #101828; }
+    .cred-banner code {
+      background: #eef2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 11px;
+      color: #0f172a;
+    }
+    .settings-toggle {
+      margin-top: 14px;
+      background: none;
+      border: 0;
+      color: #475467;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 4px;
+    }
+    .settings-panel {
+      display: none;
+      margin-top: 12px;
+      padding: 14px;
+      background: #fcfcfd;
+      border: 1px dashed #cfd5e1;
+      border-radius: 10px;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <form class="box" id="loginForm">
+    <div class="brandrow">
+      <img id="logo" class="logo" alt="School logo" hidden>
+      <div>
+        <div class="brand" id="brand">Anvi Mitra ERP</div>
+        <div class="sub" id="sub">Unified multi-school platform</div>
+      </div>
+    </div>
+
+    <label for="role">Login Role</label>
+    <select id="role">
+      <option value="super_admin" selected>Super Admin (Platform Owner)</option>
+      <option value="admin">Admin / Office</option>
+      <option value="principal">Principal</option>
+      <option value="teacher">Teacher</option>
+      <option value="accountant">Accountant</option>
+      <option value="office_staff">Office Staff</option>
+      <option value="parent">Parent</option>
+      <option value="student">Student</option>
+      <option value="driver">Driver</option>
+    </select>
+
+    <div id="schoolCodeGroup" style="display:none;">
+      <label for="schoolCode">School Code</label>
+      <input id="schoolCode" autocomplete="organization" placeholder="e.g. LSK01">
+      <div class="status" id="schoolStatus"></div>
+    </div>
+
+    <label for="loginId">Email / Mobile Number</label>
+    <input id="loginId" autocomplete="username" placeholder="superadmin@anvimitra.com" required value="superadmin@anvimitra.com">
+
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required value="SuperAdmin@123">
+
+    <button type="submit" class="btn-submit" id="submitBtn">Sign in</button>
+    <div class="msg" id="msg"></div>
+
+    <div class="cred-banner">
+      <b>Default Super Admin Login:</b><br>
+      Email: <code>superadmin@anvimitra.com</code><br>
+      Password: <code>SuperAdmin@123</code><br>
+      <span class="hint">Role: <b>Super Admin</b> (School code not required)</span>
+    </div>
+
+    <button type="button" class="settings-toggle" id="toggleSettings">⚙️ Backend Server Settings</button>
+    <div class="settings-panel" id="settingsPanel">
+      <label for="apiBaseInput" style="margin-top:0">Backend API URL</label>
+      <input id="apiBaseInput" placeholder="https://api.yourdomain.com (or leave empty for default)">
+      <div class="hint">Leave empty to use Cloudflare proxy (/api/*). Set here if testing a remote or local backend directly.</div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button type="button" id="saveApiBtn" style="padding:8px 12px;font-size:12px;background:#172b55;color:#fff;border:0;border-radius:8px;cursor:pointer">Save</button>
+        <button type="button" id="testApiBtn" style="padding:8px 12px;font-size:12px;background:#eef2f6;color:#172b55;border:1px solid #cfd5e1;border-radius:8px;cursor:pointer">Test Connection</button>
+      </div>
+      <div class="status" id="apiStatus" style="margin-top:8px"></div>
+    </div>
+  </form>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const roleSelect = document.getElementById('role');
+    const schoolCodeGroup = document.getElementById('schoolCodeGroup');
+    const code = document.getElementById('schoolCode');
+    const loginId = document.getElementById('loginId');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const brand = document.getElementById('brand');
+    const sub = document.getElementById('sub');
+    const logo = document.getElementById('logo');
+    const schoolStatus = document.getElementById('schoolStatus');
+    const msg = document.getElementById('msg');
+
+    const toggleSettings = document.getElementById('toggleSettings');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const apiBaseInput = document.getElementById('apiBaseInput');
+    const saveApiBtn = document.getElementById('saveApiBtn');
+    const testApiBtn = document.getElementById('testApiBtn');
+    const apiStatus = document.getElementById('apiStatus');
+
+    function getApiBase() {
+      return (window.ANVI_ERP_API_BASE || localStorage.getItem('anvi_erp_api_base') || '').replace(/\/+$/, '');
+    }
+
+    function apiUrl(path) {
+      const base = getApiBase();
+      if (base && typeof path === 'string' && path.startsWith('/api')) {
+        return base + path;
+      }
+      return path;
+    }
+
+    function showMsg(text, type = 'info') {
+      msg.textContent = text;
+      msg.className = 'msg ' + type;
+    }
+
+    function updateRoleUI() {
+      const isSuper = roleSelect.value === 'super_admin';
+      if (isSuper) {
+        schoolCodeGroup.style.display = 'none';
+        code.required = false;
+        code.value = '';
+        schoolStatus.textContent = '';
+        brand.textContent = 'Anvi Mitra ERP';
+        sub.textContent = 'Platform Super Admin Console';
+        logo.hidden = true;
+        if (!loginId.value || loginId.value === 'admin@school.com') {
+          loginId.value = 'superadmin@anvimitra.com';
+          passwordInput.value = 'SuperAdmin@123';
+        }
+      } else {
+        schoolCodeGroup.style.display = 'block';
+        code.required = true;
+        sub.textContent = 'Secure school management portal';
+        if (loginId.value === 'superadmin@anvimitra.com') {
+          loginId.value = '';
+          passwordInput.value = '';
+        }
+        loadSchoolConfig();
+      }
+    }
+
+    async function loadSchoolConfig() {
+      const val = code.value.trim();
+      if (!val) {
+        schoolStatus.textContent = '';
+        return;
+      }
+      schoolStatus.textContent = 'Verifying school code…';
+      try {
+        const r = await fetch(apiUrl('/api/public/school-config?schoolCode=' + encodeURIComponent(val)));
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || 'School not found');
+        const s = d.school || {};
+        brand.textContent = s.displayName || s.name || 'Anvi Mitra ERP';
+        sub.textContent = s.appName ? s.appName + ' • Management Portal' : 'Secure school management portal';
+        if (s.logoUrl) {
+          logo.src = s.logoUrl;
+          logo.hidden = false;
+        } else {
+          logo.hidden = true;
+        }
+        if (s.primaryColor) document.documentElement.style.setProperty('--primary', s.primaryColor);
+        if (s.secondaryColor) document.documentElement.style.setProperty('--secondary', s.secondaryColor);
+        schoolStatus.textContent = '✓ ' + (s.name || 'School') + ' connected';
+        schoolStatus.style.color = 'var(--secondary)';
+      } catch (err) {
+        schoolStatus.textContent = err.message;
+        schoolStatus.style.color = '#b42318';
+      }
+    }
+
+    roleSelect.addEventListener('change', updateRoleUI);
+    code.addEventListener('change', loadSchoolConfig);
+    code.addEventListener('blur', loadSchoolConfig);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showMsg('Signing in…', 'info');
+      submitBtn.disabled = true;
+
+      const isSuper = roleSelect.value === 'super_admin';
+      const payload = {
+        login: loginId.value.trim(),
+        password: passwordInput.value,
+      };
+      if (!isSuper && code.value.trim()) {
+        payload.schoolCode = code.value.trim();
+      }
+
+      try {
+        const response = await fetch(apiUrl('/api/auth/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.message || data.error || 'Login failed (status ' + response.status + ')');
+        }
+
+        if (!data.accessToken) {
+          throw new Error('Authentication failed: no access token returned by server');
+        }
+
+        sessionStorage.setItem('lsk_access_token', data.accessToken);
+        sessionStorage.setItem('lsk_user', JSON.stringify(data.user || {}));
+
+        showMsg('Login successful! Redirecting…', 'success');
+
+        const role = String(data.user?.role || roleSelect.value).toLowerCase();
+
+        setTimeout(() => {
+          if (role === 'super_admin') {
+            location.href = '/erp/web/super-admin-schools.html';
+          } else if (role === 'parent') {
+            location.href = '/erp/web/parent-dashboard.html';
+          } else {
+            location.href = '/erp/web/portal-dashboard.html?role=' + encodeURIComponent(role);
+          }
+        }, 300);
+
+      } catch (err) {
+        submitBtn.disabled = false;
+        let hint = '';
+        if (err.message.includes('Backend API is not configured') || err.message.includes('Failed to fetch')) {
+          hint = '<br><small>Tip: The Node.js ERP backend service is not running yet. Use the "⚙️ Backend Server Settings" below to configure your backend URL.</small>';
+        }
+        msg.innerHTML = err.message + hint;
+        msg.className = 'msg error';
+      }
+    });
+
+    // Settings Panel Controls
+    apiBaseInput.value = localStorage.getItem('anvi_erp_api_base') || '';
+
+    toggleSettings.addEventListener('click', () => {
+      settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+    });
+
+    saveApiBtn.addEventListener('click', () => {
+      const val = apiBaseInput.value.trim().replace(/\/+$/, '');
+      if (val) {
+        localStorage.setItem('anvi_erp_api_base', val);
+        apiStatus.textContent = '✓ Saved custom API URL: ' + val;
+        apiStatus.style.color = 'var(--secondary)';
+      } else {
+        localStorage.removeItem('anvi_erp_api_base');
+        apiStatus.textContent = '✓ Reset to default Worker proxy (/api/*)';
+        apiStatus.style.color = 'var(--secondary)';
+      }
+    });
+
+    testApiBtn.addEventListener('click', async () => {
+      apiStatus.textContent = 'Testing connection…';
+      apiStatus.style.color = '#475467';
+      try {
+        const r = await fetch(apiUrl('/api/health'));
+        const d = await r.json().catch(() => ({}));
+        if (r.ok) {
+          apiStatus.textContent = '✓ Backend Online (' + (d.status || 'OK') + ')';
+          apiStatus.style.color = '#027a48';
+        } else {
+          apiStatus.textContent = '✕ Returned ' + r.status + ': ' + (d.error || d.message || 'Error');
+          apiStatus.style.color = '#b42318';
+        }
+      } catch (e) {
+        apiStatus.textContent = '✕ Could not reach server: ' + e.message;
+        apiStatus.style.color = '#b42318';
+      }
+    });
+
+    // Initial role state
+    updateRoleUI();
+  </script>
+</body>
+</html>
