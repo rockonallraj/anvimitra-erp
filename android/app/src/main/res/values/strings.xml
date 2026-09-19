@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Anvi Mitra ERP</string>
-    <string name="default_server_url">https://anvimitra-erp.pages.dev</string>
+    <string name="default_server_url">https://anvimitra-erp.rv5646718.workers.dev</string>
+    <string name="server_url_pref_key">anvi_server_url</string>
+    <string name="change_server">Change Server</string>
+    <string name="retry">Retry</string>
+    <string name="network_error_title">Connection Failed</string>
+    <string name="network_error_message">Could not connect to the Anvi Mitra ERP server. Check your network connection or configure the server URL below.</string>
 </resources>

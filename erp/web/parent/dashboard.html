@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Anvi Mitra ERP — Parent Portal</title>
+  <link rel="stylesheet" href="/erp/web/shared/css/dashboard.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-title">Anvi Mitra ERP</div>
+      <div class="brand-sub">Parent Portal</div>
+      <nav class="nav-group">
+        <a href="/erp/web/parent/dashboard.html" class="nav-link active">🏠 Home</a>
+        <a href="/parent-attendance.html" class="nav-link">📅 Attendance</a>
+        <a href="/parent-notifications.html" class="nav-link">🔔 Notifications</a>
+        <a href="/payment-gateway.html" class="nav-link">💳 Online Fees</a>
+      </nav>
+      <button class="btn-logout" id="logoutBtn">Log out</button>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-header">
+        <div class="header-title">
+          <h1>Parent & Student Portal</h1>
+          <p>Real-time attendance records, school notices, homework assignments, and fee payment.</p>
+        </div>
+        <div class="user-badge">
+          <span id="userSchool">School</span>
+          <span class="role-pill" id="userRole">parent</span>
+        </div>
+      </div>
+
+      <div class="grid-cards">
+        <div class="metric-card">
+          <div class="metric-lbl">Attendance Rate</div>
+          <div class="metric-val" style="color:var(--success)">96.4%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Fee Status</div>
+          <div class="metric-val" style="color:var(--accent)">Cleared</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Unread Notices</div>
+          <div class="metric-val">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 style="margin:0 0 16px;font-size:20px;">Quick Links</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="/parent-attendance.html" class="btn">View Attendance Calendar</a>
+          <a href="/payment-gateway.html" class="btn btn-secondary">Pay Fees Online</a>
+          <a href="/parent-notifications.html" class="btn btn-secondary">Check Announcements</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/erp/web/api.js"></script>
+  <script src="/erp/web/shared/js/dashboard.js"></script>
+  <script>
+    const user = AnviDashboard.checkAuth(['parent', 'student', 'super_admin']);
+    if (user) {
+      AnviDashboard.setupHeader(user);
+    }
+  </script>
+</body>
+</html>

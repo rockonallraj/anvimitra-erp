@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Anvi Mitra ERP — Accounts & Finance</title>
+  <link rel="stylesheet" href="/erp/web/shared/css/dashboard.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-title">Anvi Mitra ERP</div>
+      <div class="brand-sub">Finance & Billing</div>
+      <nav class="nav-group">
+        <a href="/erp/web/accountant/dashboard.html" class="nav-link active">📊 Financial Summary</a>
+        <a href="/erp/web/fee-management.html" class="nav-link">💳 Fee Collection</a>
+        <a href="/student-fee-assignment-smart.html" class="nav-link">📝 Fee Assignment</a>
+        <a href="/fee-center.html" class="nav-link">🧾 Receipts & Ledger</a>
+      </nav>
+      <button class="btn-logout" id="logoutBtn">Log out</button>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-header">
+        <div class="header-title">
+          <h1>Finance & Fee Collection</h1>
+          <p>Fee structures, student assignments, payment receipts, outstanding balances, and ledger.</p>
+        </div>
+        <div class="user-badge">
+          <span id="userSchool">School</span>
+          <span class="role-pill" id="userRole">accountant</span>
+        </div>
+      </div>
+
+      <div class="grid-cards">
+        <div class="metric-card">
+          <div class="metric-lbl">Collection (Today)</div>
+          <div class="metric-val" style="color:var(--success)">₹42,500</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Pending Dues</div>
+          <div class="metric-val" style="color:var(--primary)">Tracked</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Payment Gateway</div>
+          <div class="metric-val" style="color:var(--accent)">Active</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 style="margin:0 0 16px;font-size:20px;">Accounting Actions</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="/erp/web/fee-management.html" class="btn">Collect Fee Payment</a>
+          <a href="/student-fee-assignment-smart.html" class="btn btn-secondary">Assign Student Fee</a>
+          <a href="/fee-center.html" class="btn btn-secondary">Print Receipt</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/erp/web/api.js"></script>
+  <script src="/erp/web/shared/js/dashboard.js"></script>
+  <script>
+    const user = AnviDashboard.checkAuth(['accountant', 'admin', 'principal', 'super_admin']);
+    if (user) {
+      AnviDashboard.setupHeader(user);
+    }
+  </script>
+</body>
+</html>

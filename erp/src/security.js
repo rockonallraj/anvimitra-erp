@@ -56,4 +56,28 @@ function verifyAccessToken(token) {
   return payload;
 }
 
-module.exports = { hashPassword, verifyPassword, signAccessToken, verifyAccessToken };
+function authenticate(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ error: 'Authentication required' });
+  try {
+    req.auth = verifyAccessToken(token);
+    req.user = req.auth;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid or expired token' });
+  }
+}
+
+function requireRoles(...roles) {
+  const flatRoles = roles.flat();
+  return (req, res, next) => {
+    if (!req.auth || !flatRoles.includes(req.auth.role)) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+    next();
+  };
+}
+
+module.exports = { hashPassword, verifyPassword, signAccessToken, verifyAccessToken, authenticate, requireRoles };
+

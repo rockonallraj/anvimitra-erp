@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Anvi Mitra ERP — School Administration</title>
+  <link rel="stylesheet" href="/erp/web/shared/css/dashboard.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-title">Anvi Mitra ERP</div>
+      <div class="brand-sub">School Admin Workspace</div>
+      <nav class="nav-group">
+        <a href="/erp/web/admin/dashboard.html" class="nav-link active">📊 Dashboard</a>
+        <a href="/erp/web/student-enrollment.html" class="nav-link">🎓 Students</a>
+        <a href="/erp/web/staff-management.html" class="nav-link">👩‍🏫 Staff & Teachers</a>
+        <a href="/erp/web/attendance.html" class="nav-link">📅 Attendance</a>
+        <a href="/erp/web/fee-management.html" class="nav-link">💳 Fee Center</a>
+        <a href="/erp/web/exam-management.html" class="nav-link">📝 Exams & Marks</a>
+        <a href="/erp/web/report-card-management.html" class="nav-link">📄 Report Cards</a>
+      </nav>
+      <button class="btn-logout" id="logoutBtn">Log out</button>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-header">
+        <div class="header-title">
+          <h1>School Administrative Portal</h1>
+          <p>Academic operations, admissions, student enrollment, fee collections, and exams.</p>
+        </div>
+        <div class="user-badge">
+          <span id="userSchool">School</span>
+          <span class="role-pill" id="userRole">admin</span>
+        </div>
+      </div>
+
+      <div class="grid-cards">
+        <div class="metric-card">
+          <div class="metric-lbl">Total Students</div>
+          <div class="metric-val" id="studentCount">Loading…</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Teaching Staff</div>
+          <div class="metric-val" id="teacherCount">Loading…</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Today's Attendance</div>
+          <div class="metric-val" style="color:var(--accent)">Active</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Fee Collection</div>
+          <div class="metric-val" style="color:var(--success)">Normal</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 style="margin:0 0 16px;font-size:20px;">Quick Management Actions</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="/erp/web/student-enrollment.html" class="btn">Enroll New Student</a>
+          <a href="/erp/web/attendance.html" class="btn btn-secondary">Mark Class Attendance</a>
+          <a href="/erp/web/fee-management.html" class="btn btn-secondary">Collect Fees</a>
+          <a href="/erp/web/exam-management.html" class="btn btn-secondary">Manage Exams</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/erp/web/api.js"></script>
+  <script src="/erp/web/shared/js/dashboard.js"></script>
+  <script>
+    const user = AnviDashboard.checkAuth(['admin', 'principal', 'super_admin']);
+    if (user) {
+      AnviDashboard.setupHeader(user);
+
+      async function loadMetrics() {
+        try {
+          const s = await LSKERP.request('/api/students');
+          document.getElementById('studentCount').textContent = (s.students || []).length;
+        } catch (_) {
+          document.getElementById('studentCount').textContent = '—';
+        }
+
+        try {
+          const t = await LSKERP.request('/api/teachers');
+          document.getElementById('teacherCount').textContent = (t.teachers || []).length;
+        } catch (_) {
+          document.getElementById('teacherCount').textContent = '—';
+        }
+      }
+      loadMetrics();
+    }
+  </script>
+</body>
+</html>

@@ -72,10 +72,56 @@ public class MainActivity extends AppCompatActivity {
         setupSwipeRefresh();
         setupBackNavigation();
 
-        String defaultUrl = getString(R.string.default_server_url);
+        setupWebView();
+        setupSwipeRefresh();
+        setupBackNavigation();
+
+        loadActiveServerUrl();
+    }
+
+    private String getServerUrl() {
+        SharedPreferences prefs = getSharedPreferences("anvi_erp_native", Context.MODE_PRIVATE);
+        return prefs.getString("server_url", getString(R.string.default_server_url));
+    }
+
+    private void saveServerUrl(String url) {
+        if (url == null || url.trim().isEmpty()) return;
+        SharedPreferences prefs = getSharedPreferences("anvi_erp_native", Context.MODE_PRIVATE);
+        prefs.edit().putString("server_url", url.trim()).apply();
+        webView.loadUrl(url.trim());
+    }
+
+    private void loadActiveServerUrl() {
         String targetUrl = getIntent() != null && getIntent().getDataString() != null
-                ? getIntent().getDataString() : defaultUrl;
+                ? getIntent().getDataString() : getServerUrl();
         webView.loadUrl(targetUrl);
+    }
+
+    private void showServerConfigDialog() {
+        android.widget.EditText input = new android.widget.EditText(this);
+        input.setText(getServerUrl());
+        input.setSingleLine(true);
+        input.setPadding(40, 20, 40, 20);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Anvi Mitra ERP Server")
+                .setMessage("Enter the ERP server or Cloudflare URL:")
+                .setView(input)
+                .setPositiveButton("Connect", (dialog, which) -> {
+                    String newUrl = input.getText().toString().trim();
+                    if (!newUrl.startsWith("http://") && !newUrl.startsWith("https://")) {
+                        newUrl = "https://" + newUrl;
+                    }
+                    saveServerUrl(newUrl);
+                    Toast.makeText(this, "Connecting to: " + newUrl, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .setNeutralButton("Reset Default", (dialog, which) -> {
+                    String defaultUrl = getString(R.string.default_server_url);
+                    saveServerUrl(defaultUrl);
+                    Toast.makeText(this, "Reset to default: " + defaultUrl, Toast.LENGTH_SHORT).show();
+                })
+                .show();
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -129,6 +175,26 @@ public class MainActivity extends AppCompatActivity {
                 if (request != null && request.isForMainFrame()) {
                     swipeRefresh.setRefreshing(false);
                     progressBar.setVisibility(View.GONE);
+                    String failedUrl = request.getUrl() != null ? request.getUrl().toString() : getServerUrl();
+                    String errorHtml = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>"
+                            + "body{font-family:system-ui,-apple-system,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#f4f7fb;color:#172033;padding:20px;box-sizing:border-box}"
+                            + ".card{background:#fff;border-radius:20px;padding:30px;max-width:400px;width:100%;box-shadow:0 10px 30px #00000010;text-align:center;border:1px solid #e2e8f0}"
+                            + ".icon{font-size:48px;margin-bottom:12px}"
+                            + "h2{margin:0 0 10px;font-size:22px}"
+                            + "p{color:#64748b;font-size:14px;line-height:1.5;margin:0 0 20px}"
+                            + "button{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:0;font-size:15px;font-weight:700;cursor:pointer}"
+                            + ".btn-primary{background:#172b55;color:#fff}"
+                            + ".btn-secondary{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1}"
+                            + ".url{word-break:break-all;font-size:12px;color:#94a3b8;margin-top:14px}"
+                            + "</style></head><body><div class='card'>"
+                            + "<div class='icon'>📡</div>"
+                            + "<h2>Cannot Connect to Server</h2>"
+                            + "<p>Make sure your internet is working or verify your ERP server address.</p>"
+                            + "<button class='btn-primary' onclick='window.AnviNativeBridge && window.AnviNativeBridge.reload()'>🔄 Retry</button>"
+                            + "<button class='btn-secondary' onclick='window.AnviNativeBridge && window.AnviNativeBridge.configureServer()'>⚙️ Change Server URL</button>"
+                            + "<div class='url'>" + failedUrl + "</div>"
+                            + "</div></body></html>";
+                    view.loadDataWithBaseURL(null, errorHtml, "text/html", "UTF-8", null);
                 }
             }
         });
@@ -221,6 +287,18 @@ public class MainActivity extends AppCompatActivity {
         @JavascriptInterface
         public void showToast(String message) {
             runOnUiThread(() -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show());
+        }
+
+        @JavascriptInterface
+        public void configureServer() {
+            runOnUiThread(() -> showServerConfigDialog());
+        }
+
+        @JavascriptInterface
+        public void reload() {
+            runOnUiThread(() -> {
+                loadActiveServerUrl();
+            });
         }
     }
 }

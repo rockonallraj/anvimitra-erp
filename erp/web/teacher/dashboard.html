@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Anvi Mitra ERP — Teacher Workspace</title>
+  <link rel="stylesheet" href="/erp/web/shared/css/dashboard.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-title">Anvi Mitra ERP</div>
+      <div class="brand-sub">Teacher Portal</div>
+      <nav class="nav-group">
+        <a href="/erp/web/teacher/dashboard.html" class="nav-link active">📊 My Dashboard</a>
+        <a href="/erp/web/attendance.html" class="nav-link">📋 Daily Attendance</a>
+        <a href="/erp/web/teacher-marks.html" class="nav-link">✍️ Marks Entry</a>
+        <a href="/erp/web/timetable.html" class="nav-link">🗓️ Timetable</a>
+      </nav>
+      <button class="btn-logout" id="logoutBtn">Log out</button>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-header">
+        <div class="header-title">
+          <h1>Teacher Workspace</h1>
+          <p>Assigned classes, daily student attendance, homework distribution, and subject marks.</p>
+        </div>
+        <div class="user-badge">
+          <span id="userSchool">School</span>
+          <span class="role-pill" id="userRole">teacher</span>
+        </div>
+      </div>
+
+      <div class="grid-cards">
+        <div class="metric-card">
+          <div class="metric-lbl">Assigned Classes</div>
+          <div class="metric-val" id="classCount">Active</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Today's Attendance</div>
+          <div class="metric-val" style="color:var(--accent)">Ready</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Current Session</div>
+          <div class="metric-val">2026-27</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 style="margin:0 0 16px;font-size:20px;">Daily Classroom Tasks</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="/erp/web/attendance.html" class="btn">Mark Class Attendance</a>
+          <a href="/erp/web/teacher-marks.html" class="btn btn-secondary">Enter Exam Marks</a>
+          <a href="/erp/web/timetable.html" class="btn btn-secondary">View Period Schedule</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/erp/web/api.js"></script>
+  <script src="/erp/web/shared/js/dashboard.js"></script>
+  <script>
+    const user = AnviDashboard.checkAuth(['teacher', 'admin', 'principal', 'super_admin']);
+    if (user) {
+      AnviDashboard.setupHeader(user);
+    }
+  </script>
+</body>
+</html>

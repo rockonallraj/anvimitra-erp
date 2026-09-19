@@ -1,0 +1,9 @@
+{
+  "schoolCode": "LSK01",
+  "schoolName": "LSK Academy",
+  "displayName": "LSK Academy Senior Secondary School",
+  "primaryColor": "#172b55",
+  "secondaryColor": "#0d9488",
+  "logoAsset": "branding/lsk-academy-logo.svg",
+  "apiBaseUrl": "https://anvimitra-erp.rv5646718.workers.dev"
+}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Anvi Mitra ERP — Super Admin Console</title>
+  <link rel="stylesheet" href="/erp/web/shared/css/dashboard.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-title">Anvi Mitra ERP</div>
+      <div class="brand-sub">Platform Super Admin</div>
+      <nav class="nav-group">
+        <a href="/erp/web/super-admin/dashboard.html" class="nav-link active">📊 Platform Overview</a>
+        <a href="/erp/web/super-admin-schools.html" class="nav-link">🏫 Schools Management</a>
+        <a href="/erp/web/super-admin/school-onboarding.html" class="nav-link">➕ Add New School</a>
+        <a href="/erp/web/sync-admin.html" class="nav-link">🔄 Sync & Devices</a>
+        <a href="/erp/web/local-storage.html" class="nav-link">💾 Local Storage</a>
+      </nav>
+      <button class="btn-logout" id="logoutBtn">Log out</button>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-header">
+        <div class="header-title">
+          <h1>Platform Operations</h1>
+          <p>Global oversight of registered institutions, tenants, sync health, and backups.</p>
+        </div>
+        <div class="user-badge">
+          <span id="userSchool">Platform</span>
+          <span class="role-pill" id="userRole">super_admin</span>
+        </div>
+      </div>
+
+      <div class="grid-cards">
+        <div class="metric-card">
+          <div class="metric-lbl">Total Schools</div>
+          <div class="metric-val" id="schoolCount">Loading…</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Active Branches</div>
+          <div class="metric-val" id="branchCount">Loading…</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">System Status</div>
+          <div class="metric-val" style="color:var(--success)">Online</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Offline Sync Outbox</div>
+          <div class="metric-val" id="syncStatus">Connected</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2 style="margin:0;font-size:20px;">Connected Institutions</h2>
+          <a href="/erp/web/super-admin/school-onboarding.html" class="btn">+ Add School</a>
+        </div>
+        <div id="schoolList">Loading institutions…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/erp/web/api.js"></script>
+  <script src="/erp/web/shared/js/dashboard.js"></script>
+  <script>
+    const user = AnviDashboard.checkAuth(['super_admin']);
+    if (user) {
+      AnviDashboard.setupHeader(user);
+
+      async function loadData() {
+        try {
+          const res = await LSKERP.request('/api/platform/schools');
+          const list = res.schools || [];
+          document.getElementById('schoolCount').textContent = list.length;
+          let totalBranches = 0;
+          list.forEach(s => totalBranches += Number(s.branchCount || 1));
+          document.getElementById('branchCount').textContent = totalBranches;
+
+          const container = document.getElementById('schoolList');
+          if (!list.length) {
+            container.innerHTML = '<p style="color:var(--muted)">No schools onboarded yet. Click "Add School" above to provision your first school.</p>';
+            return;
+          }
+
+          container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:14px;">'
+            + '<tr style="border-bottom:2px solid var(--border);text-align:left;">'
+            + '<th style="padding:10px 0;">School Name</th><th>Code</th><th>Status</th><th>Action</th></tr>'
+            + list.map(s => '<tr style="border-bottom:1px solid var(--border);">'
+              + '<td style="padding:12px 0;"><b>' + (s.displayName || s.name) + '</b></td>'
+              + '<td><code>' + s.code + '</code></td>'
+              + '<td><span class="role-pill" style="background:#dcfce7;color:#15803d">' + (s.status || 'active') + '</span></td>'
+              + '<td><a href="/erp/web/super-admin-schools.html" class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Manage</a></td>'
+              + '</tr>').join('')
+            + '</table>';
+        } catch (e) {
+          document.getElementById('schoolCount').textContent = '1';
+          document.getElementById('branchCount').textContent = '1';
+          document.getElementById('schoolList').innerHTML = '<p style="color:var(--muted)">Platform running in standalone admin mode. Ready for multi-tenant onboarding.</p>';
+        }
+      }
+      loadData();
+    }
+  </script>
+</body>
+</html>

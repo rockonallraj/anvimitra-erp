@@ -1,0 +1,9 @@
+{
+  "connectorName": "Anvi Mitra Local Storage Agent",
+  "version": "1.0.0",
+  "storagePath": "C:\\SchoolData",
+  "cloudApiUrl": "https://anvimitra-erp.rv5646718.workers.dev",
+  "syncIntervalMinutes": 5,
+  "backupIntervalHours": 24,
+  "autoPruneDays": 90
+}

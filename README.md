@@ -62,6 +62,101 @@ Multi-school, multi-branch School ERP with Web + Flutter mobile clients, central
 
 **Security:** Tenant isolation uses `school_id`; branch-aware users use `branch_id`. Teacher marks are authorized by teacher + subject + class/section + academic session + enrollment, and offline changes are re-authorized during synchronization.
 
+## 🏗️ Production-Grade Multi-School ERP Structure
+
+```
+Anvi-Mitra-ERP/
+│
+├── README.md
+├── LICENSE
+├── .gitignore
+│
+├── .github/
+│   └── workflows/
+│       ├── mobile-app-build-fixed.yml   # Release APK build & GitHub release
+│       ├── backend-ci.yml               # Node syntax checks & 25 contract test suites
+│       └── database-check.yml           # PostgreSQL schema replay & migration checks
+│
+├── android/                             # Android Native Wrapper / Bridge Client
+│   └── app/src/main/
+│       ├── java/com/anvimitra/erp/      # Native bridge with offline fallback & config dialog
+│       └── res/values/strings.xml       # Default server URL: workers.dev
+│
+└── erp/
+    ├── src/
+    │   ├── server.js                    # Central Express API server
+    │   ├── auth.js                      # JWT auth, resilient standalone mode, school-scoping
+    │   ├── security.js                  # Rate limiting, sanitize, CORS, Helmet
+    │   ├── database.js                  # PostgreSQL connection pool & transactions
+    │   ├── error_handler.js             # Central error handling & audit logging
+    │   │
+    │   ├── schools.js                   # Multi-school CRUD, branding, domain mapping
+    │   ├── branches.js                  # Branch management per school
+    │   ├── users.js                     # Multi-role user management (Super Admin, etc.)
+    │   ├── people.js                    # Students, teachers, staff master records
+    │   ├── students.js                  # Student admissions, profiles, roll numbers
+    │   ├── teachers.js                  # Teacher profiles, subject allocation
+    │   ├── enrollment.js                # Session-wise class/section enrollment
+    │   │
+    │   ├── attendance.js                # Daily student attendance, bulk, biometric
+    │   ├── staff_attendance.js          # Teacher/staff attendance, leaves
+    │   ├── timetable.js                 # Class/teacher schedules, period allocation
+    │   ├── homework.js                  # Daily homework assignments, submissions
+    │   │
+    │   ├── exams.js                     # Exam schedules, grade scales, admit cards
+    │   ├── marks.js                     # Subject-wise marks entry, validation
+    │   ├── marks_permissions.js         # Teacher-scoped marks entry authorization
+    │   ├── reportcard_engine_route.js   # CBSE/ICSE/State Board report card engine
+    │   ├── reportcard_context.js        # Report card data aggregator
+    │   ├── reportcard_list.js           # Batch report card generation
+    │   ├── reportcard_bulk.js           # Bulk PDF export & background jobs
+    │   ├── reportcard_result_sync.js    # Sync marks to final results
+    │   │
+    │   ├── fees.js                      # Fee structures, heads, categories
+    │   ├── fee_assignments.js           # Student fee assignment (concession, quota)
+    │   ├── fee_installments.js          # Due dates, fine calculation, installments
+    │   ├── fee_ledger.js                # Complete student fee account ledger
+    │   ├── fee_receipts.js              # Printable/downloadable payment receipts
+    │   ├── payment_gateway.js           # Razorpay / Cashfree / UPI integration
+    │   │
+    │   ├── transport.js                 # Buses, drivers, route mapping, tracking
+    │   ├── transport_routes.js          # Pickup/drop stops, vehicle assignment
+    │   │
+    │   ├── notifications.js             # FCM push notifications, in-app alerts
+    │   ├── sms.js                       # SMS gateway (DLT registered templates)
+    │   ├── whatsapp.js                  # WhatsApp Business API for fee alerts/reports
+    │   │
+    │   ├── sync.js                      # Offline cursor journal & push/pull sync
+    │   ├── sync_devices.js              # Registered sync devices per school
+    │   ├── conflicts.js                 # Conflict detection, audit & manual resolve
+    │   ├── local_storage.js             # Local PC/NAS folder access bridge
+    │   │
+    │   ├── backup.js                    # PostgreSQL automated dump & restore
+    │   ├── audit_logs.js                # Full system audit trail per school
+    │   │
+    │   ├── mobile.js                    # Mobile app API endpoints & version check
+    │   ├── mobile_dashboards.js         # Role-specific mobile dashboard data
+    │   └── routes.js                    # Central route aggregator & mount point
+    │
+    ├── sql/                             # PostgreSQL Migrations
+    ├── web/                             # Web Front-end & Role Dashboards
+    │   ├── super-admin/                 # Super Admin control panel
+    │   ├── admin/                       # School admin dashboard
+    │   ├── teacher/                     # Teacher dashboard
+    │   ├── accountant/                  # Fee & finance dashboard
+    │   ├── parent/                      # Parent portal
+    │   └── shared/                      # Shared CSS & JS design system
+    │
+    ├── mobile_app/                      # Flutter Cross-Platform Mobile App
+    │   ├── branding/                    # Multi-school whitelabel assets
+    │   └── lib/                         # Mobile core & client config
+    │
+    ├── local_connector/                 # Local PC / NAS Bridge (Node.js Service)
+    ├── docs/                            # Production Architecture & API Documentation
+    └── scripts/                         # Maintenance & Seed Utilities
+```
+
+
 ## Master ERP Roadmap
 
 **Completion rule:** ERP is **100% complete only when every implementation item and every verification/production item is [x].**
