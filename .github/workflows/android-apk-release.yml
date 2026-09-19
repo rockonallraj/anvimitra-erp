@@ -1,0 +1,81 @@
+name: Android APK Build & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Release Tag (e.g. v1.0.0)'
+        required: false
+        default: 'v1.0.0'
+      create_release:
+        description: 'Create a GitHub Release with the APK'
+        type: boolean
+        default: true
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant Execute Permission to Gradlew
+        run: |
+          chmod +x android/gradlew
+          chmod +x android/gradlew.bat
+
+      - name: Build Release APK
+        working-directory: android
+        run: |
+          ./gradlew assembleRelease --stacktrace --no-daemon
+
+      - name: Locate & Rename APK
+        run: |
+          mkdir -p release-artifacts
+          find android/app/build/outputs/apk/ -name "*.apk" -exec cp {} release-artifacts/anvi-mitra-erp.apk \;
+          ls -la release-artifacts/
+
+      - name: Upload APK Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anvi-mitra-erp-apk
+          path: release-artifacts/anvi-mitra-erp.apk
+
+      - name: Publish GitHub Release
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true') || startsWith(github.ref, 'refs/tags/v') }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version_tag || github.ref_name }}
+          name: "Anvi Mitra ERP Mobile App ${{ github.event.inputs.version_tag || github.ref_name }}"
+          body: |
+            ## Anvi Mitra ERP Mobile App Release
+
+            Direct Android APK download for Anvi Mitra School ERP mobile client.
+
+            ### Features:
+            - Multi-school portal access (Super Admin, Parent, Student, Teacher Attendance)
+            - Offline cache & sync outbox
+            - Document and photo upload integration
+            - Real-time updates & notifications
+
+            Download the attached `anvi-mitra-erp.apk` below to install directly on any Android phone or tablet.
+          files: release-artifacts/anvi-mitra-erp.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -33,6 +33,12 @@ window.LSKERP = (() => {
     return u;
   }
 
+  function resolveUrl(path) {
+    const base = (window.ANVI_ERP_API_BASE || localStorage.getItem('anvi_erp_api_base') || '').replace(/\/+$/, '');
+    if (base && typeof path === 'string' && path.startsWith('/api')) return base + path;
+    return path;
+  }
+
   async function request(path, options = {}) {
     const method = String(options.method || 'GET').toUpperCase();
     const headers=new Headers(options.headers || {});
@@ -47,7 +53,7 @@ window.LSKERP = (() => {
     }
 
     try {
-      const response=await fetch(path,{...options,method,headers});
+      const response=await fetch(resolveUrl(path),{...options,method,headers});
       if(response.status===401){sessionStorage.clear();location.replace('/erp/web/login.html');throw new Error('Session expired');}
       const data=await response.json().catch(()=>({}));
       if(!response.ok) throw Object.assign(new Error(data.error||`Request failed (${response.status})`),{status:response.status,data});

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Anvi Mitra ERP</string>
+    <string name="default_server_url">https://anvimitra-erp.pages.dev</string>
+</resources>

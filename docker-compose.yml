@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: anvimitra_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: erp_user
+      POSTGRES_PASSWORD: erp_secure_password_change_me
+      POSTGRES_DB: anvi_mitra_erp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./erp/sql:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U erp_user -d anvi_mitra_erp"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Anvi Mitra ERP Backend Server
+  erp-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anvimitra_erp_api
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgres://erp_user:erp_secure_password_change_me@postgres:5432/anvi_mitra_erp
+      JWT_SECRET: please-change-this-jwt-secret-at-least-32-chars-long
+      CORS_ORIGIN: "*"
+    ports:
+      - "4000:4000"
+
+  # 3. Optional Cloudflare Tunnel (cloudflared)
+  # Exposes the backend securely through Cloudflare without opening router ports.
+  # Replace TUNNEL_TOKEN with your Cloudflare Zero Trust Tunnel Token:
+  # tunnel:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: anvimitra_tunnel
+  #   restart: always
+  #   command: tunnel run
+  #   environment:
+  #     - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+  #   depends_on:
+  #     - erp-api
+
+volumes:
+  postgres_data:
+    driver: local

@@ -1,0 +1,17 @@
+# Cloudflare Pages Redirects & Reverse Proxy
+# When deployed on Cloudflare Pages, requests to /api/* are seamlessly proxied to the backend
+# without CORS restrictions. Set your production backend domain below:
+/api/*  https://api.anvimitra.com/api/:splat  200
+
+# Portal Route Aliases
+/super-admin/schools        /erp/web/super-admin-schools.html  200
+/super-admin/sync-admin     /erp/web/sync-admin.html           200
+/super-admin/local-storage  /erp/web/local-storage.html        200
+/attendance                 /attendance.html                   200
+/attendance-report          /attendance-report.html            200
+/fees                       /fee-management.html               200
+/exams                      /exam-management.html              200
+/admissions                 /admissions.html                   200
+/parent                     /parent-dashboard.html             200
+/student                    /portal-dashboard.html             200
+/login                      /login.html                        200

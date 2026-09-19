@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anvi Mitra ERP — School Management &amp; Enterprise Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: #fff;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.25rem;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+    }
+    .brand-text h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .brand-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.9); }
+    }
+    .btn-login {
+      padding: 0.5rem 1.25rem;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-login:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+    main {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      width: 100%;
+    }
+    .hero {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .hero h2 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #1e1b4b, #4f46e5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: #c7d2fe;
+    }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+    .card-tag {
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .bg-indigo { background: #e0e7ff; color: #4338ca; }
+    .bg-emerald { background: #d1fae5; color: #047857; }
+    .bg-amber { background: #fef3c7; color: #b45309; }
+    .bg-sky { background: #e0f2fe; color: #0369a1; }
+    .bg-rose { background: #ffe4e6; color: #be123c; }
+    .bg-purple { background: #f3e8ff; color: #7e22ce; }
+    .bg-slate { background: #f1f5f9; color: #334155; }
+
+    .api-config-banner {
+      margin-top: 3rem;
+      background: #ffffff;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+    .api-config-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .api-input {
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      width: 260px;
+    }
+    .btn-save-api {
+      padding: 0.45rem 0.9rem;
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    footer {
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <a href="/" class="brand">
+        <div class="brand-logo">A</div>
+        <div class="brand-text">
+          <h1>Anvi Mitra ERP</h1>
+          <span>Enterprise School System</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <div class="status-badge" id="backendStatus">
+          <span class="status-dot"></span>
+          <span>Checking API...</span>
+        </div>
+        <a href="/login.html" class="btn-login">Login</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h2>Welcome to Anvi Mitra ERP</h2>
+      <p>A multi-school, multi-branch School ERP with offline-first synchronization, teacher marks authorization, smart fee tracking, and enterprise portals.</p>
+    </div>
+
+    <div class="grid">
+      <!-- Super Admin School Management -->
+      <a href="/erp/web/super-admin-schools.html" class="card">
+        <div class="card-icon bg-indigo">🏛️</div>
+        <h3 class="card-title">Super Admin Portal</h3>
+        <p class="card-desc">Provision schools, manage branches, configure school-specific branding, logos, and mobile app packages.</p>
+        <span class="card-tag">Enter Portal &rarr;</span>
+      </a>
+
+      <!-- Attendance & Daily Register -->
+      <a href="/attendance.html" class="card">
+        <div class="card-icon bg-emerald">📋</div>
+        <h3 class="card-title">Daily Attendance</h3>
+        <p class="card-desc">Take student and staff attendance with offline local outbox queue and automatic background synchronization.</p>
+        <span class="card-tag">Take Attendance &rarr;</span>
+      </a>
+
+      <!-- Attendance Reports -->
+      <a href="/attendance-report.html" class="card">
+        <div class="card-icon bg-sky">📊</div>
+        <h3 class="card-title">Attendance Reports</h3>
+        <p class="card-desc">Monthly attendance registers, defaulter analytics, section summaries, and printable registers.</p>
+        <span class="card-tag">View Reports &rarr;</span>
+      </a>
+
+      <!-- Fee Management -->
+      <a href="/fee-management.html" class="card">
+        <div class="card-icon bg-amber">💳</div>
+        <h3 class="card-title">Fee Management</h3>
+        <p class="card-desc">Fee structures, collection ledgers, automated receipts, pending balances, and payment gateway integration.</p>
+        <span class="card-tag">Manage Fees &rarr;</span>
+      </a>
+
+      <!-- Admissions -->
+      <a href="/admissions.html" class="card">
+        <div class="card-icon bg-purple">🎓</div>
+        <h3 class="card-title">Student Admissions</h3>
+        <p class="card-desc">Process online applications, inquiries, document checks, and one-click student enrollment conversion.</p>
+        <span class="card-tag">Admissions CRM &rarr;</span>
+      </a>
+
+      <!-- Exams & Marks -->
+      <a href="/exam-management.html" class="card">
+        <div class="card-icon bg-rose">📝</div>
+        <h3 class="card-title">Examinations &amp; Marks</h3>
+        <p class="card-desc">Exam timetable planning, teacher-scoped subject marks entry, evaluation, and grading verification.</p>
+        <span class="card-tag">Manage Exams &rarr;</span>
+      </a>
+
+      <!-- Report Card Designer -->
+      <a href="/report-card-management.html" class="card">
+        <div class="card-icon bg-indigo">📜</div>
+        <h3 class="card-title">Report Card Generation</h3>
+        <p class="card-desc">Generate, customize, and print multi-term CBSE/State board report cards with remarks and percentages.</p>
+        <span class="card-tag">Design Cards &rarr;</span>
+      </a>
+
+      <!-- Parent Portal Dashboard -->
+      <a href="/parent-dashboard.html" class="card">
+        <div class="card-icon bg-sky">👨‍👩‍👧</div>
+        <h3 class="card-title">Parent Dashboard</h3>
+        <p class="card-desc">Real-time attendance timeline, fee payment history, homework, exam marks, and school notifications.</p>
+        <span class="card-tag">Parent View &rarr;</span>
+      </a>
+
+      <!-- Student & General Portal -->
+      <a href="/portal-dashboard.html" class="card">
+        <div class="card-icon bg-purple">🎒</div>
+        <h3 class="card-title">Student Portal</h3>
+        <p class="card-desc">Student profile, homework submissions, timetable view, and academic session progress track.</p>
+        <span class="card-tag">Student View &rarr;</span>
+      </a>
+
+      <!-- Sync Health & Device Admin -->
+      <a href="/erp/web/sync-admin.html" class="card">
+        <div class="card-icon bg-slate">🔄</div>
+        <h3 class="card-title">Sync &amp; Device Health</h3>
+        <p class="card-desc">Monitor offline edge devices, pending conflict journals, sync cursors, and device authorization.</p>
+        <span class="card-tag">Sync Dashboard &rarr;</span>
+      </a>
+    </div>
+
+    <!-- API Configuration Widget (helpful when frontend is hosted separately on Cloudflare Pages) -->
+    <div class="api-config-banner">
+      <div class="api-config-left">
+        <strong>🌐 Backend API Target:</strong>
+        <span id="currentApiDisplay" style="font-family: monospace; color: #4f46e5;">(Same Origin / Cloudflare Proxy)</span>
+      </div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <input type="text" id="apiBaseInput" class="api-input" placeholder="https://api.yourdomain.com">
+        <button id="saveApiBtn" class="btn-save-api">Set API URL</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Anvi Mitra ERP. Built for multi-school enterprise scale. Centralized PostgreSQL &bull; Offline-First &bull; Cloudflare Ready</p>
+  </footer>
+
+  <script>
+    const saved = localStorage.getItem('anvi_erp_api_base') || '';
+    const display = document.getElementById('currentApiDisplay');
+    const input = document.getElementById('apiBaseInput');
+    if (saved) {
+      input.value = saved;
+      display.textContent = saved;
+    }
+    document.getElementById('saveApiBtn').addEventListener('click', () => {
+      const val = input.value.trim().replace(/\/+$/, '');
+      if (val) {
+        localStorage.setItem('anvi_erp_api_base', val);
+        window.ANVI_ERP_API_BASE = val;
+        display.textContent = val;
+        alert('API Base URL updated to: ' + val);
+      } else {
+        localStorage.removeItem('anvi_erp_api_base');
+        delete window.ANVI_ERP_API_BASE;
+        display.textContent = '(Same Origin / Cloudflare Proxy)';
+        alert('Reset to default (same origin / Cloudflare proxy)');
+      }
+      checkHealth();
+    });
+
+    async function checkHealth() {
+      const badge = document.getElementById('backendStatus');
+      const base = localStorage.getItem('anvi_erp_api_base') || '';
+      try {
+        const res = await fetch((base ? base : '') + '/api/health');
+        if (res.ok) {
+          const data = await res.json();
+          badge.innerHTML = '<span class="status-dot"></span><span>API ' + (data.database === 'ok' ? 'Online' : 'Active (DB configuring)') + '</span>';
+          badge.style.background = '#ecfdf5';
+          badge.style.color = '#047857';
+          badge.style.borderColor = '#a7f3d0';
+        } else {
+          throw new Error('Status ' + res.status);
+        }
+      } catch (err) {
+        badge.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;"></span><span>Offline / Configuring</span>';
+        badge.style.background = '#fef2f2';
+        badge.style.color = '#b91c1c';
+        badge.style.borderColor = '#fecaca';
+      }
+    }
+    checkHealth();
+  </script>
+</body>
+</html>
