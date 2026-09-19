@@ -1,0 +1,16 @@
+# Exclude non-web assets from Cloudflare static asset upload
+.git/**
+.github/**
+android/**
+erp/src/**
+erp/sql/**
+erp/tests/**
+erp/scripts/**
+erp/docs/**
+erp/node_modules/**
+node_modules/**
+*.log
+*.zip
+*.db
+Dockerfile
+docker-compose.yml
