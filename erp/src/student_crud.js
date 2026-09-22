@@ -143,7 +143,7 @@ function registerStudentCrudRoutes(app, pool) {
     try {
       const b = req.body || {};
       const fields = {
-        full_name: b.fullName,
+        full_name: b.fullName !== undefined ? b.fullName : b.name,
         roll_no: b.rollNo,
         date_of_birth: b.dateOfBirth,
         gender: b.gender,
@@ -160,18 +160,38 @@ function registerStudentCrudRoutes(app, pool) {
         }
       }
 
-      if (!sets.length) return res.status(400).json({ error: 'No fields provided to update' });
+      if (sets.length) {
+        vals.push(req.params.id, req.auth.schoolId);
+        const { rows } = await pool.query(
+          `UPDATE students SET ${sets.join(', ')}, updated_at = now()
+           WHERE id = $${vals.length - 1} AND school_id = $${vals.length}
+           RETURNING id, admission_no AS "admissionNo", full_name AS "fullName", roll_no AS "rollNo", status`,
+          vals
+        );
+        if (!rows.length) return res.status(404).json({ error: 'Student not found' });
+      }
 
-      vals.push(req.params.id, req.auth.schoolId);
-      const { rows } = await pool.query(
-        `UPDATE students SET ${sets.join(', ')}, updated_at = now()
-         WHERE id = $${vals.length - 1} AND school_id = $${vals.length}
-         RETURNING id, admission_no AS "admissionNo", full_name AS "fullName", roll_no AS "rollNo", status`,
-        vals
+      if (b.classId || b.sectionId) {
+        await pool.query(
+          `UPDATE enrollments SET class_id = COALESCE($1, class_id), section_id = COALESCE($2, section_id), updated_at = now()
+           WHERE student_id = $3 AND school_id = $4 AND status = 'active'`,
+          [b.classId || null, b.sectionId || null, req.params.id, req.auth.schoolId]
+        );
+      }
+
+      const { rows: updatedRows } = await pool.query(
+        `SELECT s.id, s.admission_no AS "admissionNo", s.full_name AS "fullName", s.roll_no AS "rollNo",
+                s.date_of_birth AS "dateOfBirth", s.gender, s.status,
+                c.name AS "className", sec.name AS "sectionName"
+         FROM students s
+         LEFT JOIN enrollments en ON en.student_id = s.id AND en.status = 'active'
+         LEFT JOIN classes c ON c.id = en.class_id
+         LEFT JOIN sections sec ON sec.id = en.section_id
+         WHERE s.id = $1 AND s.school_id = $2`,
+        [req.params.id, req.auth.schoolId]
       );
 
-      if (!rows.length) return res.status(404).json({ error: 'Student not found' });
-      res.json({ student: rows[0] });
+      res.json({ student: updatedRows[0] || { id: req.params.id } });
     } catch (err) {
       next(err);
     }
@@ -212,6 +232,72 @@ function registerStudentCrudRoutes(app, pool) {
       res.status(201).json({ document: rows[0] });
     } catch (err) {
       next(err);
+    }
+  });
+
+  // 6. Direct Create Student
+  app.post('/api/students', authenticate, requireRoles(...editRoles), async (req, res, next) => {
+    const client = await pool.connect();
+    try {
+      const b = req.body || {};
+      const fullName = String(b.fullName || b.name || '').trim();
+      const admissionNo = String(b.admissionNo || ('ADM' + Math.floor(Math.random() * 90000 + 10000))).trim();
+      const rollNo = b.rollNo ? String(b.rollNo).trim() : null;
+      const gender = b.gender || 'other';
+      const dob = b.dateOfBirth || null;
+      const branchId = b.branchId || req.auth.branchId || null;
+      const status = b.status || 'active';
+
+      if (!fullName) return res.status(400).json({ error: 'Full name is required' });
+
+      await client.query('BEGIN');
+      const { rows } = await client.query(
+        `INSERT INTO students (school_id, branch_id, admission_no, full_name, roll_no, gender, date_of_birth, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING id, admission_no AS "admissionNo", full_name AS "fullName", roll_no AS "rollNo", status, branch_id AS "branchId"`,
+        [req.auth.schoolId, branchId, admissionNo, fullName, rollNo, gender, dob, status]
+      );
+      const student = rows[0];
+
+      if (b.classId || b.sectionId) {
+        await client.query(
+          `INSERT INTO enrollments (school_id, student_id, class_id, section_id, session_id, status)
+           VALUES ($1, $2, $3, $4, $5, 'active')`,
+          [req.auth.schoolId, student.id, b.classId || null, b.sectionId || null, b.sessionId || null]
+        );
+      }
+
+      await client.query('COMMIT');
+      res.status(201).json({ message: 'Student created successfully', student });
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      if (err.code === '23505') return res.status(409).json({ error: 'Admission number already exists' });
+      next(err);
+    } finally {
+      client.release();
+    }
+  });
+
+  // 7. Delete Student
+  app.delete('/api/students/:id', authenticate, requireRoles(...editRoles), async (req, res, next) => {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('DELETE FROM student_documents WHERE student_id = $1 AND school_id = $2', [req.params.id, req.auth.schoolId]);
+      await client.query('DELETE FROM student_attendance WHERE student_id = $1 AND school_id = $2', [req.params.id, req.auth.schoolId]);
+      await client.query('DELETE FROM enrollments WHERE student_id = $1 AND school_id = $2', [req.params.id, req.auth.schoolId]);
+      const { rowCount } = await client.query('DELETE FROM students WHERE id = $1 AND school_id = $2', [req.params.id, req.auth.schoolId]);
+      if (!rowCount) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ error: 'Student not found' });
+      }
+      await client.query('COMMIT');
+      res.json({ message: 'Student deleted successfully', id: req.params.id });
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      next(err);
+    } finally {
+      client.release();
     }
   });
 }

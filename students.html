@@ -1,1 +1,598 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LSK ERP — Students</title><style>:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172033;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1200px;margin:auto;padding:22px}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.head h1{margin:0;font-size:24px}.back{padding:9px 12px;border:1px solid #d9dee8;border-radius:9px;background:#fff;text-decoration:none;color:#172033}.tools{display:flex;gap:10px;margin-bottom:14px}.tools input,.tools select{flex:1;padding:11px;border:1px solid #d9dee8;border-radius:9px;background:white}.table{background:#fff;border:1px solid #e2e7ef;border-radius:14px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid #edf0f4;font-size:14px}th{font-size:12px;color:#667085;text-transform:uppercase}tr:last-child td{border-bottom:0}.muted{color:#667085;font-size:13px}.msg{padding:22px;color:#667085}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2f8;font-size:12px}</style></head><body><main class="wrap"><div class="head"><h1>Students</h1><a class="back" href="/erp/web/portal-dashboard.html">← Dashboard</a></div><div class="tools"><input id="search" placeholder="Search name or admission number"><select id="class"><option value="">All classes</option></select></div><div class="table"><table><thead><tr><th>Admission No.</th><th>Student</th><th>Class</th><th>Section</th><th>Roll No.</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="6" class="msg">Loading…</td></tr></tbody></table></div></main><script src="/erp/web/api.js"></script><script>(async()=>{if(!LSKERP.token()){location.replace('/erp/web/login.html');return}const rows=document.getElementById('rows');let students=[];try{const d=await LSKERP.request('/api/students');students=d.students||d.data||[];render()}catch(e){rows.innerHTML=`<tr><td colspan="6" class="msg">${e.message}</td></tr>`}function render(){const q=document.getElementById('search').value.trim().toLowerCase();const filtered=students.filter(s=>!q||String(s.fullName||s.full_name||'').toLowerCase().includes(q)||String(s.admissionNo||s.admission_no||'').toLowerCase().includes(q));if(!filtered.length){rows.innerHTML='<tr><td colspan="6" class="msg">No students found</td></tr>';return}rows.innerHTML=filtered.map(s=>`<tr><td>${s.admissionNo||s.admission_no||'—'}</td><td><b>${s.fullName||s.full_name||'—'}</b></td><td>${s.className||s.class_name||'—'}</td><td>${s.sectionName||s.section_name||'—'}</td><td>${s.rollNo||s.roll_no||'—'}</td><td><span class="badge">${s.status||'active'}</span></td></tr>`).join('')}document.getElementById('search').addEventListener('input',render)})();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anvi Mitra ERP • Students Directory & Admissions</title>
+<style>
+:root {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+  color: #172033;
+  background: #f4f7fb;
+  --muted: #667085;
+  --line: #e5eaf2;
+  --brand: #4f46e5;
+  --brand-light: #eef2ff;
+  --card: #ffffff;
+  --success: #059669;
+  --danger: #dc2626;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f7fb; }
+.wrap { max-width: 1300px; margin: auto; padding: 24px; }
+
+/* Top Header */
+.head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.head-left h1 { margin: 4px 0 0 0; font-size: 26px; letter-spacing: -0.5px; font-weight: 800; }
+.head-left p { margin: 4px 0 0 0; color: var(--muted); font-size: 14px; }
+.eyebrow { color: var(--brand); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+.head-actions { display: flex; gap: 10px; align-items: center; }
+
+.btn-back { padding: 9px 15px; border: 1px solid var(--line); border-radius: 10px; background: #fff; text-decoration: none; color: #334155; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: .15s; }
+.btn-back:hover { background: #f8fafc; }
+.btn-primary { border: 0; background: var(--brand); color: #fff; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: .15s; box-shadow: 0 4px 14px #4f46e530; }
+.btn-primary:hover { opacity: 0.93; transform: translateY(-1px); }
+
+/* Quick KPI Cards */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 2px 8px #17203304; }
+.kpi span { font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+.kpi strong { font-size: 24px; font-weight: 800; }
+
+/* Filter Bar */
+.filter-bar { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 18px; box-shadow: 0 2px 8px #17203304; }
+.filter-bar input, .filter-bar select { width: 100%; padding: 10px 14px; border: 1px solid #d9dfeb; border-radius: 10px; font-size: 14px; outline: none; background: #fff; font: inherit; }
+.filter-bar input:focus, .filter-bar select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px #4f46e515; }
+
+/* Table Container */
+.table-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 16px #17203306; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 850px; }
+thead { background: #f8fafc; border-bottom: 1px solid var(--line); }
+th { text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+td { padding: 13px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+tr:hover td { background: #fafcff; }
+
+/* Student Identity Row */
+.student-cell { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+.student-name { font-weight: 700; color: #0f172a; }
+.student-sub { font-size: 12px; color: var(--muted); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.badge-active { background: #ecfdf5; color: #047857; }
+.badge-inactive { background: #fef2f2; color: #dc2626; }
+.badge-gender { background: #f1f5f9; color: #475467; font-weight: 500; font-size: 11px; text-transform: capitalize; }
+
+/* Actions buttons */
+.btn-action-group { display: flex; gap: 6px; align-items: center; }
+.btn-edit { border: 1px solid #e0e7ff; background: #eef2ff; color: #4338ca; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: .15s; }
+.btn-edit:hover { background: #4338ca; color: #fff; }
+.btn-del { border: 1px solid #fee2e2; background: #fef2f2; color: #dc2626; padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: .15s; }
+.btn-del:hover { background: #dc2626; color: #fff; }
+
+.empty-state { text-align: center; padding: 45px 20px; color: var(--muted); }
+
+/* Modal Bottom Sheets */
+.backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px); z-index: 99; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.backdrop.active { opacity: 1; pointer-events: auto; }
+.sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; z-index: 100; border-radius: 24px 24px 0 0; padding: 28px; max-width: 720px; margin: 0 auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.18); transform: translateY(105%); transition: transform .3s cubic-bezier(0.16, 1, 0.3, 1); max-height: 90vh; overflow-y: auto; }
+.sheet.active { transform: translateY(0); }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.sheet-head h2 { margin: 0; font-size: 20px; font-weight: 800; }
+.btn-close { border: 0; background: #f1f5f9; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: #64748b; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { font-size: 12px; font-weight: 700; color: #475467; text-transform: uppercase; letter-spacing: 0.05em; }
+.form-group input, .form-group select { width: 100%; padding: 11px 13px; border: 1px solid #d9dfeb; border-radius: 10px; font-size: 14px; outline: none; background: #fff; font: inherit; }
+.form-group input:focus, .form-group select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px #4f46e515; }
+.form-actions { margin-top: 22px; display: flex; justify-content: flex-end; gap: 10px; }
+.msg-banner { margin-top: 14px; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; display: none; }
+
+@media (max-width: 768px) {
+  .kpis { grid-template-columns: 1fr 1fr; }
+  .filter-bar { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- Top Navigation & Title -->
+  <div class="head">
+    <div class="head-left">
+      <div class="eyebrow">Academic Administration</div>
+      <h1>Students Directory & Admissions</h1>
+      <p>Manage enrolled students, academic classes, sections, roll numbers and profiles.</p>
+    </div>
+    <div class="head-actions">
+      <a class="btn-back" href="/erp/web/portal-dashboard.html">← Back to Dashboard</a>
+      <button class="btn-primary" onclick="openAddStudent()">+ Add Student / Admission</button>
+    </div>
+  </div>
+
+  <!-- KPI summary cards -->
+  <div class="kpis">
+    <div class="kpi">
+      <span>Total Enrolled</span>
+      <strong id="kpiTotal">0</strong>
+    </div>
+    <div class="kpi">
+      <span>Active Students</span>
+      <strong id="kpiActive" style="color:var(--success)">0</strong>
+    </div>
+    <div class="kpi">
+      <span>Classes Active</span>
+      <strong id="kpiClasses">0</strong>
+    </div>
+    <div class="kpi">
+      <span>Gender Balance</span>
+      <strong id="kpiGender" style="font-size:18px;margin-top:4px">—</strong>
+    </div>
+  </div>
+
+  <!-- Filter & Search toolbar -->
+  <div class="filter-bar">
+    <input type="text" id="search" placeholder="🔍 Search by student name, admission no, or roll no…">
+    <select id="filterClass">
+      <option value="">All Classes</option>
+    </select>
+    <select id="filterStatus">
+      <option value="">All Statuses</option>
+      <option value="active">Active Only</option>
+      <option value="inactive">Inactive</option>
+    </select>
+  </div>
+
+  <!-- Students Data Table -->
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Student Info</th>
+            <th>Admission No</th>
+            <th>Class & Section</th>
+            <th>Roll No</th>
+            <th>Gender</th>
+            <th>Status</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr>
+            <td colspan="7" class="empty-state">Loading student records…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 1: Add Student / New Admission -->
+<div class="backdrop" id="addBackdrop" onclick="closeAddStudent()"></div>
+<div class="sheet" id="sheetAdd">
+  <div class="sheet-head">
+    <h2>+ New Student Admission</h2>
+    <button class="btn-close" onclick="closeAddStudent()">✕</button>
+  </div>
+  <form id="addStudentForm">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Full Name *</label>
+        <input type="text" id="addName" name="fullName" placeholder="e.g. Aarav Sharma" required>
+      </div>
+      <div class="form-group">
+        <label>Admission No</label>
+        <input type="text" id="addAdmissionNo" name="admissionNo" placeholder="Auto-generated if empty">
+      </div>
+      <div class="form-group">
+        <label>Roll Number</label>
+        <input type="text" id="addRollNo" name="rollNo" placeholder="e.g. 15">
+      </div>
+      <div class="form-group">
+        <label>Class *</label>
+        <select id="addClassSelect" name="classId" required>
+          <option value="">Select Class</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section *</label>
+        <select id="addSectionSelect" name="sectionId" required>
+          <option value="">Select Section</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Gender</label>
+        <select id="addGender" name="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" id="addDob" name="dateOfBirth" value="2016-01-01">
+      </div>
+      <div class="form-group full">
+        <label>Status</label>
+        <select id="addStatus" name="status">
+          <option value="active" selected>Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="msg-banner" id="addMsg"></div>
+    <div class="form-actions">
+      <button type="button" class="btn-back" onclick="closeAddStudent()">Cancel</button>
+      <button type="submit" class="btn-primary" id="saveAddBtn">Save Student Record</button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal 2: Edit Student Details -->
+<div class="backdrop" id="editBackdrop" onclick="closeEditStudent()"></div>
+<div class="sheet" id="sheetEdit">
+  <div class="sheet-head">
+    <h2>✏️ Edit Student Details</h2>
+    <button class="btn-close" onclick="closeEditStudent()">✕</button>
+  </div>
+  <form id="editStudentForm">
+    <input type="hidden" id="editId" name="id">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Full Name *</label>
+        <input type="text" id="editName" name="fullName" required>
+      </div>
+      <div class="form-group">
+        <label>Admission No</label>
+        <input type="text" id="editAdmissionNo" name="admissionNo" readonly style="background:#f8fafc">
+      </div>
+      <div class="form-group">
+        <label>Roll Number</label>
+        <input type="text" id="editRollNo" name="rollNo">
+      </div>
+      <div class="form-group">
+        <label>Class</label>
+        <select id="editClassSelect" name="classId">
+          <option value="">Select Class</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section</label>
+        <select id="editSectionSelect" name="sectionId">
+          <option value="">Select Section</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Gender</label>
+        <select id="editGender" name="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" id="editDob" name="dateOfBirth">
+      </div>
+      <div class="form-group full">
+        <label>Status</label>
+        <select id="editStatus" name="status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="msg-banner" id="editMsg"></div>
+    <div class="form-actions">
+      <button type="button" class="btn-back" onclick="closeEditStudent()">Cancel</button>
+      <button type="submit" class="btn-primary" id="saveEditBtn">Update Student</button>
+    </div>
+  </form>
+</div>
+
+<script src="/erp/web/api.js"></script>
+<script>
+(async () => {
+  const token = () => localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || sessionStorage.getItem('lsk_access_token') || '';
+  if (!token()) {
+    location.replace('/erp/web/login.html');
+    return;
+  }
+
+  const esc = (x) => String(x ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  let students = [];
+  let classes = [];
+  let sections = [];
+
+  async function api(path, options = {}) {
+    if (window.LSKERP && LSKERP.request) {
+      return await LSKERP.request(path, options);
+    }
+    const res = await fetch(path, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token(),
+        ...(options.headers || {}),
+      },
+    });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(d.error || 'Request failed');
+    return d;
+  }
+
+  function getInitials(name) {
+    const p = String(name || '').trim().split(/\s+/);
+    if (!p.length || !p[0]) return 'ST';
+    if (p.length === 1) return p[0].substring(0, 2).toUpperCase();
+    return (p[0][0] + p[p.length - 1][0]).toUpperCase();
+  }
+
+  function updateKpis() {
+    document.getElementById('kpiTotal').textContent = students.length;
+    document.getElementById('kpiActive').textContent = students.filter((s) => (s.status || 'active').toLowerCase() === 'active').length;
+    const uniqueClasses = new Set(students.map((s) => s.className || s.class_name || s.classId).filter(Boolean));
+    document.getElementById('kpiClasses').textContent = uniqueClasses.size || classes.length;
+    const boys = students.filter((s) => (s.gender || '').toLowerCase() === 'male').length;
+    const girls = students.filter((s) => (s.gender || '').toLowerCase() === 'female').length;
+    document.getElementById('kpiGender').textContent = `${boys} Boys • ${girls} Girls`;
+  }
+
+  function render() {
+    const q = (document.getElementById('search').value || '').trim().toLowerCase();
+    const clsFilter = document.getElementById('filterClass').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+
+    const filtered = students.filter((s) => {
+      const name = String(s.fullName || s.full_name || s.name || '').toLowerCase();
+      const adm = String(s.admissionNo || s.admission_no || '').toLowerCase();
+      const roll = String(s.rollNo || s.roll_no || '').toLowerCase();
+      const matchesQ = !q || name.includes(q) || adm.includes(q) || roll.includes(q);
+
+      const studentClass = String(s.classId || s.className || s.class_name || '');
+      const matchesClass = !clsFilter || studentClass === clsFilter;
+
+      const studentStatus = String(s.status || 'active').toLowerCase();
+      const matchesStatus = !statusFilter || studentStatus === statusFilter;
+
+      return matchesQ && matchesClass && matchesStatus;
+    });
+
+    const tbody = document.getElementById('rows');
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No matching students found. Click "+ Add Student" to register a student.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map((s) => {
+      const id = s.id;
+      const name = s.fullName || s.full_name || s.name || 'Unnamed';
+      const adm = s.admissionNo || s.admission_no || '—';
+      const cName = s.className || s.class_name || 'Class';
+      const sName = s.sectionName || s.section_name || 'Section';
+      const roll = s.rollNo || s.roll_no || '—';
+      const gender = s.gender || 'male';
+      const status = (s.status || 'active').toLowerCase();
+
+      return `
+        <tr>
+          <td>
+            <div class="student-cell">
+              <div class="avatar">${esc(getInitials(name))}</div>
+              <div>
+                <div class="student-name">${esc(name)}</div>
+                <div class="student-sub">DOB: ${esc(s.dateOfBirth ? String(s.dateOfBirth).slice(0, 10) : '—')}</div>
+              </div>
+            </div>
+          </td>
+          <td><strong>${esc(adm)}</strong></td>
+          <td>${esc(cName)} <span style="color:var(--muted)">•</span> ${esc(sName)}</td>
+          <td>${esc(roll)}</td>
+          <td><span class="badge badge-gender">${esc(gender)}</span></td>
+          <td>
+            <span class="badge ${status === 'active' ? 'badge-active' : 'badge-inactive'}">
+              ● ${status === 'active' ? 'Active' : 'Inactive'}
+            </span>
+          </td>
+          <td style="text-align:right">
+            <div class="btn-action-group" style="justify-content:flex-end">
+              <button class="btn-edit" onclick="openEditStudent('${esc(id)}')">✏️ Edit</button>
+              <button class="btn-del" onclick="deleteStudent('${esc(id)}', '${esc(name)}', '${esc(adm)}')">🗑️ Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    updateKpis();
+  }
+
+  // --- Add Student Logic ---
+  window.openAddStudent = () => {
+    document.getElementById('addAdmissionNo').value = 'ADM-' + Math.floor(Math.random() * 900 + 100);
+    document.getElementById('addName').value = '';
+    document.getElementById('addRollNo').value = '';
+    document.getElementById('addMsg').style.display = 'none';
+    document.getElementById('addBackdrop').classList.add('active');
+    document.getElementById('sheetAdd').classList.add('active');
+  };
+
+  window.closeAddStudent = () => {
+    document.getElementById('addBackdrop').classList.remove('active');
+    document.getElementById('sheetAdd').classList.remove('active');
+  };
+
+  document.getElementById('addStudentForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('saveAddBtn');
+    const msg = document.getElementById('addMsg');
+    msg.style.display = 'block';
+    msg.style.background = '#eef2ff';
+    msg.style.color = '#4338ca';
+    msg.textContent = 'Enrolling student…';
+    btn.disabled = true;
+
+    const formData = new FormData(e.target);
+    const body = Object.fromEntries(formData);
+    const selClass = classes.find((c) => c.id === body.classId);
+    const selSection = sections.find((s) => (s.id === body.sectionId || s.sectionId === body.sectionId));
+    body.className = selClass?.name || 'Class 1';
+    body.sectionName = selSection?.name || selSection?.sectionName || 'Section A';
+
+    try {
+      const res = await api('/api/students', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+      const newStudent = res.student || { ...body, id: 'stu_' + Date.now() };
+      students.unshift(newStudent);
+      render();
+      msg.style.background = '#ecfdf5';
+      msg.style.color = '#047857';
+      msg.textContent = '✓ Student enrolled successfully!';
+      setTimeout(() => {
+        closeAddStudent();
+        btn.disabled = false;
+      }, 700);
+    } catch (err) {
+      msg.style.background = '#fef2f2';
+      msg.style.color = '#dc2626';
+      msg.textContent = 'Error: ' + err.message;
+      btn.disabled = false;
+    }
+  };
+
+  // --- Edit Student Logic ---
+  window.openEditStudent = (id) => {
+    const s = students.find((x) => x.id === id);
+    if (!s) return;
+
+    document.getElementById('editId').value = s.id;
+    document.getElementById('editName').value = s.fullName || s.full_name || s.name || '';
+    document.getElementById('editAdmissionNo').value = s.admissionNo || s.admission_no || '';
+    document.getElementById('editRollNo').value = s.rollNo || s.roll_no || '';
+    document.getElementById('editClassSelect').value = s.classId || '';
+    document.getElementById('editSectionSelect').value = s.sectionId || '';
+    document.getElementById('editGender').value = s.gender || 'male';
+    document.getElementById('editDob').value = s.dateOfBirth ? String(s.dateOfBirth).slice(0, 10) : '';
+    document.getElementById('editStatus').value = (s.status || 'active').toLowerCase();
+
+    document.getElementById('editMsg').style.display = 'none';
+    document.getElementById('editBackdrop').classList.add('active');
+    document.getElementById('sheetEdit').classList.add('active');
+  };
+
+  window.closeEditStudent = () => {
+    document.getElementById('editBackdrop').classList.remove('active');
+    document.getElementById('sheetEdit').classList.remove('active');
+  };
+
+  document.getElementById('editStudentForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editId').value;
+    const btn = document.getElementById('saveEditBtn');
+    const msg = document.getElementById('editMsg');
+    msg.style.display = 'block';
+    msg.style.background = '#eef2ff';
+    msg.style.color = '#4338ca';
+    msg.textContent = 'Updating student profile…';
+    btn.disabled = true;
+
+    const formData = new FormData(e.target);
+    const body = Object.fromEntries(formData);
+    const selClass = classes.find((c) => c.id === body.classId);
+    const selSection = sections.find((s) => (s.id === body.sectionId || s.sectionId === body.sectionId));
+    if (selClass) body.className = selClass.name;
+    if (selSection) body.sectionName = selSection.name || selSection.sectionName;
+
+    try {
+      const res = await api(`/api/students/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+
+      const idx = students.findIndex((x) => x.id === id);
+      if (idx >= 0) {
+        students[idx] = { ...students[idx], ...body, ...(res.student || {}) };
+      }
+      render();
+
+      msg.style.background = '#ecfdf5';
+      msg.style.color = '#047857';
+      msg.textContent = '✓ Student updated successfully!';
+      setTimeout(() => {
+        closeEditStudent();
+        btn.disabled = false;
+      }, 700);
+    } catch (err) {
+      msg.style.background = '#fef2f2';
+      msg.style.color = '#dc2626';
+      msg.textContent = 'Error: ' + err.message;
+      btn.disabled = false;
+    }
+  };
+
+  // --- Delete Student Logic ---
+  window.deleteStudent = async (id, name, adm) => {
+    if (!confirm(`Are you sure you want to delete student "${name}" (Admission No: ${adm})?\nThis will remove their enrollment and records.`)) return;
+    try {
+      await api(`/api/students/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      students = students.filter((s) => s.id !== id && s.admissionNo !== adm);
+      render();
+      alert(`Student "${name}" has been deleted.`);
+    } catch (err) {
+      alert(`Could not delete student: ${err.message}`);
+    }
+  };
+
+  // --- Load Initial Data ---
+  async function init() {
+    try {
+      const [stuRes, structRes] = await Promise.all([
+        api('/api/students').catch(() => ({ students: [] })),
+        api('/api/academic-structure').catch(() => ({ classes: [], sections: [] })),
+      ]);
+
+      students = stuRes.students || stuRes.data || [];
+      classes = structRes.classes || [];
+      sections = structRes.sections || [];
+
+      // Populate class filter
+      const filterSelect = document.getElementById('filterClass');
+      const addSelect = document.getElementById('addClassSelect');
+      const editSelect = document.getElementById('editClassSelect');
+
+      const classOptions = classes.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+      filterSelect.innerHTML = '<option value="">All Classes</option>' + classOptions;
+      addSelect.innerHTML = '<option value="">Select Class</option>' + classOptions;
+      editSelect.innerHTML = '<option value="">Select Class</option>' + classOptions;
+
+      // Populate sections
+      const addSec = document.getElementById('addSectionSelect');
+      const editSec = document.getElementById('editSectionSelect');
+      const secOptions = sections.map((s) => `<option value="${esc(s.id || s.sectionId)}">${esc(s.name || s.sectionName)} (${esc(s.className || 'Class')})</option>`).join('');
+      addSec.innerHTML = '<option value="">Select Section</option>' + secOptions;
+      editSec.innerHTML = '<option value="">Select Section</option>' + secOptions;
+
+      render();
+    } catch (e) {
+      document.getElementById('rows').innerHTML = `<tr><td colspan="7" class="empty-state" style="color:#ef4444">Failed to load students: ${esc(e.message)}</td></tr>`;
+    }
+  }
+
+  document.getElementById('search').addEventListener('input', render);
+  document.getElementById('filterClass').addEventListener('change', render);
+  document.getElementById('filterStatus').addEventListener('change', render);
+
+  init();
+})();
+</script>
+</body>
+</html>

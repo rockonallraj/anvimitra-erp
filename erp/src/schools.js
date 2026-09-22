@@ -56,6 +56,28 @@ function registerSchoolRoutes(app, pool) {
       res.json({ school: rows[0] });
     } catch (err) { next(err); }
   });
+
+  app.put('/api/schools/:id', authenticate, requireRoles('super_admin'), async (req, res, next) => {
+    try {
+      const { name, code, status } = req.body || {};
+      if (!pool) return res.json({ school: { id: req.params.id, name, code, status } });
+      const { rows } = await pool.query(
+        'UPDATE schools SET name = COALESCE($1, name), code = COALESCE($2, code), status = COALESCE($3, status), updated_at = now() WHERE id = $4 RETURNING *',
+        [name, code ? code.toUpperCase() : null, status, req.params.id]
+      );
+      if (!rows.length) return res.status(404).json({ error: 'School not found' });
+      res.json({ school: rows[0] });
+    } catch (err) { next(err); }
+  });
+
+  app.delete('/api/schools/:id', authenticate, requireRoles('super_admin'), async (req, res, next) => {
+    try {
+      if (!pool) return res.json({ message: 'School deleted successfully', id: req.params.id });
+      const { rowCount } = await pool.query('DELETE FROM schools WHERE id = $1', [req.params.id]);
+      if (!rowCount) return res.status(404).json({ error: 'School not found' });
+      res.json({ message: 'School deleted successfully', id: req.params.id });
+    } catch (err) { next(err); }
+  });
 }
 
 module.exports = { registerSchoolRoutes };

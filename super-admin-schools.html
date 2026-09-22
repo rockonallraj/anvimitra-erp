@@ -165,6 +165,94 @@
   </form>
 </div>
 
+<div class="bottom-sheet-backdrop" id="editSheetBackdrop" onclick="closeEdit()"></div>
+<div class="bottom-sheet" id="sheetEdit" style="max-width:720px">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">✏️ Edit School Tenant</div>
+  <div class="sheet-subtitle">Update school details, branding, contacts, and configuration.</div>
+
+  <form id="editForm">
+    <input type="hidden" id="editId" name="id">
+    <div class="section-heading" style="margin:10px 0 8px"><h3>1. School Identity</h3></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">SCHOOL NAME *</label>
+        <input id="editName" name="name" class="input-field" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">SCHOOL CODE *</label>
+        <input id="editCode" name="code" class="input-field" required>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">DISPLAY NAME</label>
+        <input id="editDisplayName" name="displayName" class="input-field">
+      </div>
+      <div class="form-group">
+        <label class="form-label">STATUS</label>
+        <select id="editStatus" name="status" class="input-field">
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">EMAIL</label>
+        <input id="editEmail" name="email" type="email" class="input-field">
+      </div>
+      <div class="form-group">
+        <label class="form-label">PHONE</label>
+        <input id="editPhone" name="phone" class="input-field">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">ADDRESS</label>
+      <input id="editAddress" name="address" class="input-field">
+    </div>
+
+    <div class="section-heading" style="margin:16px 0 8px"><h3>2. Mobile App &amp; API Configuration</h3></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">APP SLUG</label>
+        <input id="editAppSlug" name="appSlug" class="input-field">
+      </div>
+      <div class="form-group">
+        <label class="form-label">APP NAME</label>
+        <input id="editAppName" name="appName" class="input-field">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">API BASE URL</label>
+      <input id="editApiBaseUrl" name="apiBaseUrl" class="input-field">
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">PRIMARY COLOR</label>
+        <input id="editPrimaryColor" name="primaryColor" type="color" style="height:44px;padding:2px">
+      </div>
+      <div class="form-group">
+        <label class="form-label">SECONDARY COLOR</label>
+        <input id="editSecondaryColor" name="secondaryColor" type="color" style="height:44px;padding:2px">
+      </div>
+    </div>
+
+    <div id="editMsg" style="display:none;padding:10px;border-radius:var(--radius-md);margin:14px 0;font-size:13px"></div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button type="button" class="btn-cta" style="background:#f1f5f9;color:#334155;box-shadow:none" onclick="closeEdit()">Cancel</button>
+      <button type="submit" class="btn-cta" id="updateBtn">💾 Save Changes</button>
+    </div>
+  </form>
+</div>
+
 <script>
 let schools = [];
 const token = () => localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || sessionStorage.getItem('lsk_access_token') || '';
@@ -222,8 +310,10 @@ function render() {
         </div>
       </div>
 
-      <div class="sc-footer">
+      <div class="sc-footer" style="display:flex;gap:8px;align-items:center">
         <button class="btn-cta" style="flex:1;font-size:13px;padding:9px" onclick="launchSchool('${s.id}', '${s.code}')">Launch Dashboard →</button>
+        <button class="btn-cta" style="background:#eef2ff;color:#4f46e5;box-shadow:none;padding:9px 12px;font-size:13px" onclick="openEdit('${s.id}')" title="Edit School Details">✏️ Edit</button>
+        <button class="btn-cta" style="background:#fef2f2;color:#dc2626;box-shadow:none;padding:9px 12px;font-size:13px" onclick="deleteSchool('${s.id}', '${esc(s.name)}')" title="Delete School Tenant">🗑️</button>
       </div>
     </div>
   `).join('');
@@ -237,6 +327,46 @@ function launchSchool(id, code) {
   sessionStorage.setItem('lsk_school_id', id);
   sessionStorage.setItem('lsk_school_code', code);
   location.href = '/erp/web/portal-dashboard.html';
+}
+
+function openEdit(id) {
+  const s = schools.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('editId').value = s.id;
+  document.getElementById('editName').value = s.name || '';
+  document.getElementById('editDisplayName').value = s.displayName || s.name || '';
+  document.getElementById('editCode').value = s.code || '';
+  document.getElementById('editStatus').value = s.status || 'active';
+  document.getElementById('editLogoUrl').value = s.logoUrl || '';
+  document.getElementById('editEmail').value = s.email || '';
+  document.getElementById('editPhone').value = s.phone || '';
+  document.getElementById('editAddress').value = s.address || '';
+  document.getElementById('editAppSlug').value = s.appSlug || '';
+  document.getElementById('editAppName').value = s.appName || '';
+  document.getElementById('editApiBaseUrl').value = s.apiBaseUrl || '';
+  document.getElementById('editPrimaryColor').value = s.primaryColor || '#4f46e5';
+  document.getElementById('editSecondaryColor').value = s.secondaryColor || '#06b6d4';
+
+  document.getElementById('editSheetBackdrop').classList.add('active');
+  document.getElementById('sheetEdit').classList.add('active');
+  document.getElementById('editMsg').style.display = 'none';
+}
+
+function closeEdit() {
+  document.getElementById('editSheetBackdrop').classList.remove('active');
+  document.getElementById('sheetEdit').classList.remove('active');
+}
+
+async function deleteSchool(id, name) {
+  if (!confirm(`Are you sure you want to delete school "${name}"?\nAll associated branches, teachers, and records will be deleted.`)) return;
+  try {
+    await api(`/api/platform/schools/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    schools = schools.filter(s => s.id !== id);
+    render();
+    alert(`School "${name}" has been deleted successfully.`);
+  } catch (err) {
+    alert(`Could not delete school: ${err.message}`);
+  }
 }
 
 async function load() {
@@ -285,6 +415,43 @@ document.getElementById('form').onsubmit = async (e) => {
     setTimeout(() => {
       closeAdd();
       e.target.reset();
+      btn.disabled = false;
+    }, 700);
+  } catch (x) {
+    msg.style.background = '#fff0f0';
+    msg.style.color = '#ef4444';
+    msg.textContent = x.message;
+    btn.disabled = false;
+  }
+};
+
+document.getElementById('editForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('editId').value;
+  const msg = document.getElementById('editMsg');
+  const btn = document.getElementById('updateBtn');
+  msg.style.display = 'block';
+  msg.style.background = '#eef3ff';
+  msg.style.color = '#4f46e5';
+  msg.textContent = 'Saving changes…';
+  btn.disabled = true;
+
+  const b = Object.fromEntries(new FormData(e.target));
+  if (!b.displayName) b.displayName = b.name;
+  if (!b.appName) b.appName = b.displayName;
+
+  try {
+    const d = await api(`/api/platform/schools/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(b) });
+    msg.style.background = '#ecfdf5';
+    msg.style.color = '#047857';
+    msg.textContent = '✓ School updated successfully!';
+    const idx = schools.findIndex(s => s.id === id);
+    if (idx >= 0) {
+      schools[idx] = Object.assign({}, schools[idx], b, d.school || {});
+    }
+    render();
+    setTimeout(() => {
+      closeEdit();
       btn.disabled = false;
     }, 700);
   } catch (x) {

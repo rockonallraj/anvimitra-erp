@@ -123,6 +123,30 @@ function registerAcademicMasterRoutes(app, pool) {
       res.status(201).json({subject:rows[0]});
     } catch(err){if(err.code==='23505')return res.status(409).json({error:'Subject code/name already exists'});next(err)}
   });
+
+  app.delete(['/api/academic/classes/:id', '/api/classes/:id'], authenticate, requireRoles(...managers), async (req, res, next) => {
+    try {
+      const { rowCount } = await pool.query('DELETE FROM classes WHERE id=$1 AND school_id=$2', [req.params.id, req.auth.schoolId]);
+      if (!rowCount) return res.status(404).json({ error: 'Class not found' });
+      res.json({ message: 'Class deleted successfully', id: req.params.id });
+    } catch(err) { next(err); }
+  });
+
+  app.delete(['/api/academic/sections/:id', '/api/sections/:id'], authenticate, requireRoles(...managers), async (req, res, next) => {
+    try {
+      const { rowCount } = await pool.query('DELETE FROM sections WHERE id=$1 AND school_id=$2', [req.params.id, req.auth.schoolId]);
+      if (!rowCount) return res.status(404).json({ error: 'Section not found' });
+      res.json({ message: 'Section deleted successfully', id: req.params.id });
+    } catch(err) { next(err); }
+  });
+
+  app.delete(['/api/academic/subjects/:id', '/api/subjects/:id'], authenticate, requireRoles(...managers), async (req, res, next) => {
+    try {
+      const { rowCount } = await pool.query('DELETE FROM subjects WHERE id=$1 AND school_id=$2', [req.params.id, req.auth.schoolId]);
+      if (!rowCount) return res.status(404).json({ error: 'Subject not found' });
+      res.json({ message: 'Subject deleted successfully', id: req.params.id });
+    } catch(err) { next(err); }
+  });
 }
 
 module.exports={registerAcademicMasterRoutes};

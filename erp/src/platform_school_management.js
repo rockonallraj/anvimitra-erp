@@ -192,5 +192,29 @@ function registerPlatformSchoolManagementRoutes(app, pool) {
       }catch(err){await client.query('ROLLBACK').catch(()=>{});throw err}finally{client.release()}
     }catch(err){next(err)}
   });
+
+  app.delete('/api/platform/schools/:id', authenticate, requireRoles('super_admin'), async (req, res, next) => {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const school = await client.query('SELECT id, name FROM schools WHERE id = $1', [req.params.id]);
+      if (!school.rowCount) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ error: 'School not found' });
+      }
+      await client.query('DELETE FROM mobile_app_configs WHERE school_id = $1', [req.params.id]);
+      await client.query('DELETE FROM school_settings WHERE school_id = $1', [req.params.id]);
+      await client.query('DELETE FROM branches WHERE school_id = $1', [req.params.id]);
+      await client.query('DELETE FROM users WHERE school_id = $1', [req.params.id]);
+      await client.query('DELETE FROM schools WHERE id = $1', [req.params.id]);
+      await client.query('COMMIT');
+      res.json({ message: 'School tenant deleted successfully', id: req.params.id });
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      next(err);
+    } finally {
+      client.release();
+    }
+  });
 }
 module.exports={registerPlatformSchoolManagementRoutes};

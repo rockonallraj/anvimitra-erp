@@ -368,19 +368,109 @@ async function handleEdgeApi(request, url, env) {
     });
   }
 
-  // 9. Classes, Sections, Subjects individually
-  if (path === '/api/classes') {
+  // 9. Classes, Sections, Subjects (Add, Edit, Delete)
+  if (path === '/api/classes' || path === '/api/academic/classes') {
+    if (method === 'POST') {
+      const b = await request.json().catch(() => ({}));
+      const c = {
+        id: 'c_' + Date.now(),
+        name: b.name || 'New Class',
+        code: (b.code || b.name || 'CLS').toUpperCase(),
+        branchId: b.branchId || null,
+        status: 'active',
+      };
+      memoryClasses.push(c);
+      return json({ message: 'Class created', class: c }, 201);
+    }
     return json({ classes: memoryClasses });
   }
-  if (path === '/api/sections') {
-    return json({ sections: memorySections });
-  }
-  if (path === '/api/subjects') {
-    return json({ subjects: memorySubjects });
+  if (path.startsWith('/api/classes/') || path.startsWith('/api/academic/classes/')) {
+    const id = path.split('/').pop();
+    if (method === 'DELETE') {
+      memoryClasses = memoryClasses.filter(c => c.id !== id);
+      return json({ message: 'Class deleted successfully', id });
+    }
+    if (method === 'PATCH' || method === 'PUT') {
+      const b = await request.json().catch(() => ({}));
+      const c = memoryClasses.find(c => c.id === id);
+      if (c) {
+        if (b.name) c.name = b.name;
+        if (b.code) c.code = b.code;
+        if (b.status) c.status = b.status;
+      }
+      return json({ message: 'Class updated', class: c });
+    }
   }
 
-  // 10. School Platform Management
-  if (path === '/api/platform/schools') {
+  if (path === '/api/sections' || path === '/api/academic/sections') {
+    if (method === 'POST') {
+      const b = await request.json().catch(() => ({}));
+      const cls = memoryClasses.find(c => c.id === b.classId);
+      const s = {
+        id: 'sec_' + Date.now(),
+        sectionId: 'sec_' + Date.now(),
+        classId: b.classId,
+        className: cls?.name || 'Class',
+        name: b.name || 'A',
+        sectionName: b.name || 'A',
+        studentCount: 0,
+        status: 'active',
+      };
+      memorySections.push(s);
+      return json({ message: 'Section created', section: s }, 201);
+    }
+    return json({ sections: memorySections });
+  }
+  if (path.startsWith('/api/sections/') || path.startsWith('/api/academic/sections/')) {
+    const id = path.split('/').pop();
+    if (method === 'DELETE') {
+      memorySections = memorySections.filter(s => s.id !== id && s.sectionId !== id);
+      return json({ message: 'Section deleted successfully', id });
+    }
+    if (method === 'PATCH' || method === 'PUT') {
+      const b = await request.json().catch(() => ({}));
+      const s = memorySections.find(s => s.id === id || s.sectionId === id);
+      if (s) {
+        if (b.name) { s.name = b.name; s.sectionName = b.name; }
+        if (b.status) s.status = b.status;
+      }
+      return json({ message: 'Section updated', section: s });
+    }
+  }
+
+  if (path === '/api/subjects' || path === '/api/academic/subjects') {
+    if (method === 'POST') {
+      const b = await request.json().catch(() => ({}));
+      const s = {
+        id: 'sub_' + Date.now(),
+        name: b.name || 'Subject',
+        code: (b.code || b.name || 'SUB').toUpperCase(),
+        status: 'active',
+      };
+      memorySubjects.push(s);
+      return json({ message: 'Subject created', subject: s }, 201);
+    }
+    return json({ subjects: memorySubjects });
+  }
+  if (path.startsWith('/api/subjects/') || path.startsWith('/api/academic/subjects/')) {
+    const id = path.split('/').pop();
+    if (method === 'DELETE') {
+      memorySubjects = memorySubjects.filter(s => s.id !== id);
+      return json({ message: 'Subject deleted successfully', id });
+    }
+    if (method === 'PATCH' || method === 'PUT') {
+      const b = await request.json().catch(() => ({}));
+      const s = memorySubjects.find(s => s.id === id);
+      if (s) {
+        if (b.name) s.name = b.name;
+        if (b.code) s.code = b.code;
+      }
+      return json({ message: 'Subject updated', subject: s });
+    }
+  }
+
+  // 10. School Platform Management (List & Create)
+  if (path === '/api/platform/schools' || path === '/api/schools') {
     if (method === 'GET') {
       return json({ schools: memorySchools });
     }
@@ -434,9 +524,35 @@ async function handleEdgeApi(request, url, env) {
     }
   }
 
-  // 11. Specific School Detail
-  if (path.startsWith('/api/platform/schools/')) {
-    const id = path.replace('/api/platform/schools/', '').trim();
+  // 11. Specific School Detail, Edit & Delete
+  if (path.startsWith('/api/platform/schools/') || path.startsWith('/api/schools/')) {
+    const id = path.replace('/api/platform/schools/', '').replace('/api/schools/', '').trim();
+    if (method === 'DELETE') {
+      memorySchools = memorySchools.filter((s) => s.id !== id);
+      return json({ message: 'School tenant deleted successfully', id });
+    }
+    if (method === 'PATCH' || method === 'PUT') {
+      const b = await request.json().catch(() => ({}));
+      const school = memorySchools.find((s) => s.id === id);
+      if (school) {
+        if (b.name) school.name = b.name;
+        if (b.displayName) school.displayName = b.displayName;
+        if (b.code) school.code = b.code.toUpperCase();
+        if (b.status) school.status = b.status;
+        if (b.logoUrl !== undefined) school.logoUrl = b.logoUrl;
+        if (b.email) school.email = b.email;
+        if (b.phone) school.phone = b.phone;
+        if (b.address !== undefined) school.address = b.address;
+        if (b.appName) school.appName = b.appName;
+        if (b.appSlug) school.appSlug = b.appSlug.toLowerCase();
+        if (b.apiBaseUrl) school.apiBaseUrl = b.apiBaseUrl;
+        if (b.primaryColor) school.primaryColor = b.primaryColor;
+        if (b.secondaryColor) school.secondaryColor = b.secondaryColor;
+        if (b.timezone) school.timezone = b.timezone;
+        if (b.currencyCode) school.currencyCode = b.currencyCode;
+      }
+      return json({ message: 'School updated successfully', school: school || { id } });
+    }
     const school = memorySchools.find((s) => s.id === id) || memorySchools[0];
     const branches = memoryBranches.filter((b) => b.schoolId === school.id);
     return json({ school, branches });
@@ -718,7 +834,7 @@ async function handleEdgeApi(request, url, env) {
     return json({ message: 'Report card published successfully' });
   }
 
-  // 26. Students Directory & Search
+  // 26. Students Directory, Add, Edit & Delete
   if (path === '/api/students/search') {
     const q = (url.searchParams.get('q') || '').toLowerCase();
     const res = q ? memoryStudents.filter((s) => s.fullName.toLowerCase().includes(q) || s.admissionNo.toLowerCase().includes(q)) : memoryStudents;
@@ -726,10 +842,52 @@ async function handleEdgeApi(request, url, env) {
   }
   if (path.startsWith('/api/students/')) {
     const id = path.replace('/api/students/', '').trim();
+    if (method === 'DELETE') {
+      memoryStudents = memoryStudents.filter((s) => s.id !== id && s.admissionNo !== id);
+      return json({ message: 'Student deleted successfully', id });
+    }
+    if (method === 'PATCH' || method === 'PUT') {
+      const b = await request.json().catch(() => ({}));
+      const student = memoryStudents.find((s) => s.id === id || s.admissionNo === id);
+      if (student) {
+        if (b.fullName || b.name) student.fullName = b.fullName || b.name;
+        if (b.admissionNo) student.admissionNo = b.admissionNo;
+        if (b.rollNo) student.rollNo = b.rollNo;
+        if (b.className) student.className = b.className;
+        if (b.sectionName) student.sectionName = b.sectionName;
+        if (b.classId) student.classId = b.classId;
+        if (b.sectionId) student.sectionId = b.sectionId;
+        if (b.status) student.status = b.status;
+        if (b.gender) student.gender = b.gender;
+        if (b.dateOfBirth) student.dateOfBirth = b.dateOfBirth;
+      }
+      return json({ message: 'Student updated successfully', student: student || { id } });
+    }
     const student = memoryStudents.find((s) => s.id === id || s.admissionNo === id) || memoryStudents[0];
     return json({ student });
   }
   if (path === '/api/students') {
+    if (method === 'POST') {
+      const b = await request.json().catch(() => ({}));
+      const cls = memoryClasses.find((c) => c.id === b.classId);
+      const sec = memorySections.find((s) => s.id === b.sectionId);
+      const s = {
+        id: 'stu_' + Date.now(),
+        admissionNo: b.admissionNo || ('ADM-' + Math.floor(Math.random() * 900 + 100)),
+        fullName: b.fullName || b.name || 'New Student',
+        rollNo: b.rollNo || String(memoryStudents.length + 1),
+        classId: b.classId || 'c1',
+        className: b.className || cls?.name || 'Class 1',
+        sectionId: b.sectionId || 'sec-1a',
+        sectionName: b.sectionName || sec?.name || 'Section A',
+        gender: b.gender || 'male',
+        dateOfBirth: b.dateOfBirth || '2015-05-15',
+        status: b.status || 'active',
+        branchName: 'Main Branch',
+      };
+      memoryStudents.unshift(s);
+      return json({ message: 'Student added successfully', student: s }, 201);
+    }
     return json({ students: memoryStudents });
   }
 
