@@ -1,1 +1,623 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Anvi Mitra ERP • Dashboard</title><style>:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#172033;background:#f5f7fb;--line:#e5eaf2;--brand:#5b5bd6;--accent:#08a88a}*{box-sizing:border-box}body{margin:0;overflow-x:hidden}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.side{background:linear-gradient(160deg,#0b1024,#29265f 55%,#3c2470);color:#fff;padding:22px;position:relative;overflow:hidden}.side:after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:#ffffff10;right:-80px;bottom:10%;animation:orb 8s ease-in-out infinite alternate}.brand{font-size:20px;font-weight:900;letter-spacing:-.4px}.sub{font-size:11px;color:#bfc8ea;margin:5px 0 28px}.nav{display:grid;gap:7px;position:relative;z-index:1}.nav button{border:1px solid transparent;background:#ffffff05;color:#dce3ff;text-align:left;padding:11px 12px;border-radius:11px;font-size:14px;cursor:pointer;transition:.2s}.nav button:hover,.nav button.active{background:#ffffff14;border-color:#ffffff18;color:#fff;transform:translateX(3px)}.logout{position:relative;z-index:1;margin-top:18px;width:100%;padding:10px;border:1px solid #53608a;background:#ffffff08;color:white;border-radius:10px;cursor:pointer}.main{padding:25px;max-width:1500px;width:100%;margin:auto;position:relative}.main:before{content:'';position:fixed;inset:-35%;z-index:-1;background:radial-gradient(circle at 15% 20%,#7c3aed12,transparent 25%),radial-gradient(circle at 85% 15%,#06b6d414,transparent 24%),radial-gradient(circle at 70% 85%,#5b5bd610,transparent 28%);animation:bgmove 18s ease-in-out infinite alternate}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px;animation:down .5s ease}.top h1{margin:0;font-size:29px;letter-spacing:-.8px}.role{font-size:13px;background:#fff;border:1px solid var(--line);padding:8px 13px;border-radius:999px;box-shadow:0 7px 22px #10162d0a;text-transform:capitalize}.hero{position:relative;overflow:hidden;background:linear-gradient(120deg,#202653,#5f45c8 58%,#7439b7);color:white;border-radius:22px;padding:25px;display:flex;justify-content:space-between;align-items:center;gap:20px;box-shadow:0 18px 50px #34266b25;animation:rise .6s ease}.hero:after{content:'';position:absolute;width:260px;height:260px;border:1px solid #ffffff20;border-radius:50%;right:20%;top:-180px;animation:spin 18s linear infinite}.hero h2{margin:0 0 7px;font-size:23px}.hero p{margin:0;color:#e8eaff;font-size:13px}.switch{min-width:250px;position:relative;z-index:1}.switch label{display:block;font-size:10px;color:#dfe2ff;margin-bottom:5px;font-weight:800;letter-spacing:.8px}.switch select{width:100%;padding:11px;border:1px solid #ffffff35;border-radius:11px;background:#ffffff15;color:white;outline:none}.switch select option{color:#172033;background:white}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:17px}.card,.section{background:#ffffffd9;backdrop-filter:blur(10px);border:1px solid #e4e8f0;border-radius:17px;padding:18px;box-shadow:0 12px 35px #10162d09;animation:rise .55s ease}.card:nth-child(2){animation-delay:.05s}.card:nth-child(3){animation-delay:.1s}.card:nth-child(4){animation-delay:.15s}.label{font-size:12px;color:#667085}.value{font-size:28px;font-weight:900;margin-top:5px}.section{margin-top:18px}.section h2{font-size:18px;margin:0 0 13px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.item{padding:16px;border:1px solid #e7eaf0;border-radius:13px;background:#fff;text-align:left;cursor:pointer;font:inherit;transition:.2s}.item:hover{transform:translateY(-3px);box-shadow:0 12px 28px #10162d12;border-color:#cfd5e5}.item b{display:block;margin-bottom:5px}.muted{color:#667085;font-size:13px;line-height:1.45}.error{color:#b42318;font-size:13px;margin-top:12px}.status{font-size:12px;color:#087443;margin-top:5px}.sync-btn{margin-top:10px;border:1px solid #cfd5e1;background:#fff;padding:8px 10px;border-radius:9px;font-weight:800;cursor:pointer}.sync-btn:disabled{opacity:.6}.online{color:#087443}.offline{color:#b54708}@media(max-width:1000px){.app{grid-template-columns:1fr}.side{padding:12px;position:sticky;top:0;z-index:5}.nav{display:flex;overflow:auto}.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.main{padding:16px}}@media(max-width:620px){.cards{grid-template-columns:1fr}.top,.hero{align-items:flex-start;flex-direction:column}.switch{width:100%;min-width:0}}@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes down{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}@keyframes bgmove{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,2%,0) scale(1.05)}}@keyframes orb{from{transform:translateY(0)}to{transform:translateY(-35px)}}@keyframes spin{to{transform:rotate(360deg)}}</style><script>function openModule(label){const routes={'Students':'/erp/web/student-enrollment.html','Teachers':'/erp/web/staff-management.html','Teacher Assignments':'/erp/web/teacher-assignments.html','Report Cards':'/erp/web/report-card-management.html','Report Card Designer':'/erp/web/report-card-designer.html','Fees':'/erp/web/fee-management.html','Academic Setup':'/erp/web/academic-master.html','Exams & Results':'/erp/web/exam-management.html','Local Storage':'/erp/web/local-storage.html','Teacher Permissions':'/erp/web/teacher-permissions.html'};if(routes[label])location.href=routes[label]}</script></head><body><div class="app"><aside class="side"><div class="brand">Anvi Mitra ERP</div><div class="sub">Multi-School • Multi-Branch</div><nav class="nav" id="nav"></nav><button class="logout" id="logout">Logout</button></aside><main class="main"><div class="top"><h1 id="title">Dashboard</h1><div class="role" id="role">Role: —</div></div><section class="hero"><div><h2 id="schoolName">Welcome to Anvi Mitra ERP</h2><p id="branchName">Choose your working branch for a focused dashboard.</p></div><div class="switch"><label>WORKING BRANCH</label><select id="branchSelect"><option value="">All / School level</option></select></div></section><div class="cards" id="cards"></div><div class="section"><h2>Quick access</h2><div class="grid" id="content"></div><div class="error" id="error"></div></div></main></div><script src="/erp/web/api.js"></script><script src="/erp/web/offline-sync.js"></script><script>(async()=>{const token=LSKERP.token();if(!token){location.replace('/erp/web/login.html');return}let user=LSKERP.user();const role=(user.role||'').toLowerCase();const roles={admin:['Dashboard','Academic Setup','Students','Admissions','Attendance','Exams & Results','Fees','Timetable','Homework','Teachers','Reports','Report Cards','Report Card Designer'],principal:['Dashboard','Academic Setup','Students','Admissions','Attendance','Exams & Results','Fees','Timetable','Homework','Teachers','Reports','Report Cards','Report Card Designer'],super_admin:['Dashboard','School Management','Academic Setup','Students','Admissions','Attendance','Exams & Results','Fees','Timetable','Homework','Teachers','Reports','Report Cards','Report Card Designer'],accountant:['Dashboard','Students','Fees','Reports'],office_staff:['Dashboard','Students','Admissions','Fees','Reports'],teacher:['Dashboard','Students','Attendance','Exams & Results','Timetable','Homework'],parent:['Dashboard','My Children','Attendance','Homework','Exams & Results','Fees']};const data={admin:[['Academic Setup','Classes, sections, subjects and academic sessions'],['Students','Admissions, profiles and enrollments'],['Reports','Academic and operational reports'],['Report Cards','Generate, review, publish and print student report cards'],['Report Card Designer','Create school / branch-specific report card templates'],['Fees','Fee structure, invoices, collection and dues']],principal:[['Academic Setup','Classes, sections, subjects and academic sessions'],['Students','Admissions, profiles and enrollments'],['Reports','Academic and operational reports'],['Report Cards','Generate, review, publish and print student report cards'],['Fees','Fee structure, invoices, collection and dues']],super_admin:[['Academic Setup','Classes, sections, subjects and academic sessions'],['Students','Admissions, profiles and enrollments'],['Reports','Academic and operational reports'],['Report Cards','Generate, review, publish and print student report cards'],['Fees','Fee structure, invoices, collection and dues']],accountant:[['Fees','Fee structure, invoices, collection and dues'],['Reports','Collection and outstanding reports']],office_staff:[['Students','Admissions, profiles and enrollments'],['Fees','Fee structure, invoices, collection and dues']],teacher:[['Today','Attendance and timetable at a glance'],['Homework','Create and review class homework'],['Results','FA1 / FA2 / FA3 / Half Yearly / Yearly marks']],parent:[['My Children','See linked student profiles'],['Homework','See assigned and pending homework'],['Results','View published exam results']]};if(!roles[role]){sessionStorage.clear();location.replace('/erp/web/login.html');return}document.getElementById('role').textContent='Role: '+role;const nav=document.getElementById('nav');roles[role].forEach((x,i)=>{const b=document.createElement('button');b.textContent=x;b.className=i?'':'active';b.onclick=()=>{document.querySelectorAll('.nav button').forEach(n=>n.classList.remove('active'));b.classList.add('active');document.getElementById('title').textContent=x;if(x==='School Management'){location.href='/erp/web/super-admin-schools.html';return}openModule(x)};nav.appendChild(b)});document.getElementById('content').innerHTML=data[role].map(x=>'<button class="item" onclick="openModule(\''+x[0]+'\')"><b>'+x[0]+'</b><span class="muted">'+x[1]+'</span></button>').join('');document.getElementById('logout').onclick=()=>{sessionStorage.clear();location.replace('/erp/web/login.html')};async function load(){try{const org=await LSKERP.request('/api/organization');document.getElementById('schoolName').textContent=org.school.displayName||org.school.name;const select=document.getElementById('branchSelect');select.innerHTML='<option value="">All / School level</option>'+(org.branches||[]).map(b=>'<option value="'+b.id+'">'+b.name+' ('+b.code+')</option>').join('');if(user.branchId)select.value=user.branchId;document.getElementById('branchName').textContent=select.value?((org.branches||[]).find(b=>b.id===select.value)?.name||'Selected branch')+' • Branch-scoped view':'School-level view • Select a branch to focus your workspace';select.onchange=async()=>{try{select.disabled=true;await LSKERP.setBranch(select.value);user=LSKERP.user();await load()}catch(e){document.getElementById('error').textContent=e.message||'Could not switch branch'}finally{select.disabled=false}};const d=role==='parent'?await LSKERP.request('/api/portal/me/students'):await LSKERP.request('/api/students');const list=d.students||[];let sync={online:navigator.onLine,outboxCount:0,cursor:0};if(window.AnviMitraOfflineSync)sync=await AnviMitraOfflineSync.status();document.getElementById('cards').innerHTML='<div class="card"><div class="label">Students visible</div><div class="value">'+list.length+'</div><div class="muted">Based on your school/branch access</div></div><div class="card"><div class="label">Branches</div><div class="value">'+(org.branches||[]).length+'</div><div class="muted">Configured branches</div></div><div class="card"><div class="label">ERP status</div><div class="value">✓</div><div class="status">Authenticated & connected</div></div><div class="card"><div class="label">Data sync</div><div class="value '+(sync.online?'online':'offline')+'" style="font-size:20px">'+(sync.online?'Online':'Offline')+'</div><div class="muted">Pending: '+sync.outboxCount+' • Cursor: '+sync.cursor+'</div><button class="sync-btn" id="syncNow">Sync now</button></div>';document.getElementById('syncNow').onclick=async()=>{const b=document.getElementById('syncNow');b.disabled=true;b.textContent='Syncing…';try{if(window.AnviMitraOfflineSync)await AnviMitraOfflineSync.sync();await load()}catch(e){document.getElementById('error').textContent=e.message||'Sync failed'}finally{b.disabled=false;b.textContent='Sync now'}}}catch(e){document.getElementById('error').textContent=e.message||'Could not load dashboard data'}}load()})();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Anvi Mitra ERP • School Enterprise Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/erp/web/shared/css/dashboard.css">
+</head>
+<body>
+
+  <!-- Mobile Sticky App Header (Visible only on mobile <= 900px) -->
+  <header class="mobile-app-header">
+    <div class="mobile-header-inner">
+      <div class="school-selector-pill" onclick="AnviDashboard.switchTab('more')">
+        <div class="school-mini-logo">AM</div>
+        <div class="school-pill-text">
+          <strong class="school-name-display">Anvi Mitra ERP</strong>
+          <span id="mobileBranchLabel">Main Campus</span>
+        </div>
+      </div>
+      <div class="header-right-tools">
+        <div class="sync-badge" id="syncBadgeMobile" onclick="triggerSync()">
+          <span class="sync-dot"></span> Synced
+        </div>
+        <button class="icon-btn" onclick="AnviDashboard.switchTab('more')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+          <span class="badge-dot"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+
+    <!-- Desktop Sidebar (Visible > 900px) -->
+    <aside class="app-sidebar">
+      <div class="brand-row">
+        <div class="brand-icon">AM</div>
+        <div class="brand-info">
+          <h2 class="school-name-display">Anvi Mitra ERP</h2>
+          <span>Production Hub</span>
+        </div>
+      </div>
+
+      <div class="nav-section-label">Main Modules</div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="home" onclick="AnviDashboard.switchTab('home')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+          Overview
+        </button>
+        <button class="nav-item" data-tab="academics" onclick="AnviDashboard.switchTab('academics')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+          Academics &amp; Classes
+        </button>
+        <button class="nav-item" data-tab="finance" onclick="AnviDashboard.switchTab('finance')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0v8.25m0 0h19.5m-19.5 0v3.75m19.5-3.75V6m0 0h-.75a.75.75 0 01-.75-.75V4.5m0 1.5H3.75m16.5 0v1.5a.75.75 0 01-.75.75H4.5a.75.75 0 01-.75-.75V6m16.5 0V4.5M3.75 4.5H20.25"/></svg>
+          Fees &amp; Accounting
+        </button>
+        <button class="nav-item" data-tab="directory" onclick="AnviDashboard.switchTab('directory')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+          Students &amp; Staff
+        </button>
+        <button class="nav-item" data-tab="more" onclick="AnviDashboard.switchTab('more')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          System &amp; Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="user-avatar user-avatar-text">SA</div>
+        <div class="user-details">
+          <b id="userNameDisplay">Administrator</b>
+          <small class="user-role-display">Super Admin</small>
+        </div>
+        <button class="btn-logout" title="Sign Out">
+          <svg style="width:18px;height:18px;stroke:currentColor" viewBox="0 0 24 24" fill="none"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Dynamic Content Area -->
+    <main class="app-main">
+
+      <!-- ====================================================================
+           TAB 1: HOME / OVERVIEW
+           ==================================================================== -->
+      <section id="tab-home" class="tab-pane active">
+        <!-- Banner -->
+        <div class="overview-banner">
+          <div class="banner-content">
+            <div class="banner-text">
+              <h1 id="welcomeGreeting">Good Morning, Admin 👋</h1>
+              <p>Here is what is happening at your school campus today.</p>
+            </div>
+            <div class="banner-stats">
+              <div class="banner-stat-chip">
+                <span>Active Branch</span>
+                <b id="activeBranchChip">Main Campus</b>
+              </div>
+              <div class="banner-stat-chip">
+                <span>Session</span>
+                <b>2026-2027</b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards with Visual Rings -->
+        <div class="kpi-grid">
+          <!-- KPI 1: Attendance Gauge -->
+          <div class="kpi-card">
+            <div class="kpi-text">
+              <span>Today's Attendance</span>
+              <h2 id="kpiAttendancePercent">96.4%</h2>
+              <span class="kpi-badge up">✓ 412 Present • 15 Absent</span>
+            </div>
+            <div class="ring-container">
+              <svg width="64" height="64">
+                <circle cx="32" cy="32" r="26" stroke="#e2e8f0" stroke-width="6" fill="none"/>
+                <circle cx="32" cy="32" r="26" stroke="#10b981" stroke-width="6" fill="none"
+                        stroke-dasharray="163.3" stroke-dashoffset="6"/>
+              </svg>
+              <div class="ring-text">96%</div>
+            </div>
+          </div>
+
+          <!-- KPI 2: Total Enrolled -->
+          <div class="kpi-card">
+            <div class="kpi-text">
+              <span>Active Students</span>
+              <h2 id="kpiTotalStudents">427</h2>
+              <span class="kpi-badge up">● 18 Classes • 24 Sections</span>
+            </div>
+            <div class="ring-container">
+              <svg width="64" height="64">
+                <circle cx="32" cy="32" r="26" stroke="#e2e8f0" stroke-width="6" fill="none"/>
+                <circle cx="32" cy="32" r="26" stroke="#4f46e5" stroke-width="6" fill="none"
+                        stroke-dasharray="163.3" stroke-dashoffset="20"/>
+              </svg>
+              <div class="ring-text">427</div>
+            </div>
+          </div>
+
+          <!-- KPI 3: Fee Meter -->
+          <div class="kpi-card">
+            <div class="kpi-text">
+              <span>Monthly Fee Inflow</span>
+              <h2 id="kpiFeeCollected">₹ 4.82 L</h2>
+              <span class="kpi-badge warn">₹ 38K Dues Pending</span>
+            </div>
+            <div class="ring-container">
+              <svg width="64" height="64">
+                <circle cx="32" cy="32" r="26" stroke="#e2e8f0" stroke-width="6" fill="none"/>
+                <circle cx="32" cy="32" r="26" stroke="#06b6d4" stroke-width="6" fill="none"
+                        stroke-dasharray="163.3" stroke-dashoffset="15"/>
+              </svg>
+              <div class="ring-text">93%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Tiles (App Style Grid) -->
+        <div class="section-heading">
+          <h3>Quick Action Command Tiles</h3>
+          <a href="javascript:void(0)" onclick="AnviDashboard.switchTab('academics')">View All Modules →</a>
+        </div>
+
+        <div class="quick-action-grid">
+          <div class="action-tile" onclick="AnviDashboard.openBottomSheet('sheetAttendance')">
+            <div class="tile-icon-box" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <strong>Take Attendance</strong>
+            <span>1-Tap quick class mark</span>
+          </div>
+
+          <div class="action-tile" onclick="AnviDashboard.openBottomSheet('sheetFee')">
+            <div class="tile-icon-box" style="background:linear-gradient(135deg,#06b6d4,#0284c7)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+            </div>
+            <strong>Fee Counter</strong>
+            <span>Instant thermal receipt</span>
+          </div>
+
+          <div class="action-tile" onclick="location.href='/erp/web/report-card-management.html'">
+            <div class="tile-icon-box" style="background:linear-gradient(135deg,#10b981,#059669)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+            </div>
+            <strong>Report Cards</strong>
+            <span>CBSE &amp; State marksheet</span>
+          </div>
+
+          <div class="action-tile" onclick="AnviDashboard.openBottomSheet('sheetBroadcast')">
+            <div class="tile-icon-box" style="background:linear-gradient(135deg,#25d366,#128c7e)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+            </div>
+            <strong>WhatsApp Broadcast</strong>
+            <span>Fee alerts &amp; notices</span>
+          </div>
+        </div>
+
+        <!-- Today's Schedule & Period Timeline -->
+        <div class="agenda-card">
+          <div class="section-heading" style="margin-top:0">
+            <h3>Live Class Timetable</h3>
+            <span class="live-badge">● PERIOD 3 IN SESSION</span>
+          </div>
+
+          <div class="timeline-list">
+            <div class="timeline-item">
+              <div class="time-slot">08:30 - 09:15</div>
+              <div class="period-info">
+                <b>Morning Assembly &amp; Roll Call</b>
+                <small>All Sections • Campus Ground</small>
+              </div>
+              <span class="kpi-badge up">Completed</span>
+            </div>
+
+            <div class="timeline-item">
+              <div class="time-slot">09:15 - 10:00</div>
+              <div class="period-info">
+                <b>Period 1: Mathematics</b>
+                <small>Grade 10-A • Room 102 • Teacher: Rajesh Kumar</small>
+              </div>
+              <span class="kpi-badge up">Completed</span>
+            </div>
+
+            <div class="timeline-item live">
+              <div class="time-slot" style="color:#10b981">10:00 - 10:45</div>
+              <div class="period-info">
+                <b style="color:#0f5132">Period 2: Science &amp; Lab</b>
+                <small>Grade 9-B • Physics Lab • Teacher: Priya Sharma</small>
+              </div>
+              <span class="live-badge">NOW LIVE</span>
+            </div>
+
+            <div class="timeline-item">
+              <div class="time-slot">10:45 - 11:30</div>
+              <div class="period-info">
+                <b>Period 3: English Literature</b>
+                <small>Grade 8-C • Room 204 • Teacher: Sarah Thomas</small>
+              </div>
+              <span class="kpi-badge">Upcoming</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 2: ACADEMICS
+           ==================================================================== -->
+      <section id="tab-academics" class="tab-pane">
+        <div class="section-heading">
+          <h3>Academic Administration &amp; Learning</h3>
+        </div>
+
+        <div class="quick-action-grid" style="grid-template-columns:repeat(3,1fr)">
+          <a class="action-tile" href="/erp/web/attendance.html">
+            <div class="tile-icon-box" style="background:#4f46e5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v1.5"/></svg></div>
+            <strong>Daily Attendance</strong>
+            <span>Section &amp; Biometric logs</span>
+          </a>
+
+          <a class="action-tile" href="/erp/web/timetable.html">
+            <div class="tile-icon-box" style="background:#06b6d4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg></div>
+            <strong>Class Timetable</strong>
+            <span>Teacher &amp; room slots</span>
+          </a>
+
+          <a class="action-tile" href="/erp/web/exam-management.html">
+            <div class="tile-icon-box" style="background:#f59e0b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342"/></svg></div>
+            <strong>Exams &amp; Tests</strong>
+            <span>Term schedules &amp; marks</span>
+          </a>
+
+          <a class="action-tile" href="/erp/web/teacher-marks.html">
+            <div class="tile-icon-box" style="background:#10b981"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg></div>
+            <strong>Teacher Marks Entry</strong>
+            <span>Subject-scoped validation</span>
+          </a>
+
+          <a class="action-tile" href="/erp/web/report-card-management.html">
+            <div class="tile-icon-box" style="background:#8b5cf6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg></div>
+            <strong>CBSE Report Cards</strong>
+            <span>Automated rank &amp; grades</span>
+          </a>
+
+          <a class="action-tile" href="/erp/web/report-card-designer.html">
+            <div class="tile-icon-box" style="background:#ec4899"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg></div>
+            <strong>Report Card Designer</strong>
+            <span>Custom school templates</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 3: FINANCE & FEES
+           ==================================================================== -->
+      <section id="tab-finance" class="tab-pane">
+        <div class="section-heading">
+          <h3>Fee Counter &amp; Financial Ledger</h3>
+          <button class="btn-cta" style="width:auto;padding:8px 16px" onclick="AnviDashboard.openBottomSheet('sheetFee')">＋ Collect Fee</button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-text">
+              <span>Today's Collections</span>
+              <h2>₹ 64,500</h2>
+              <span class="kpi-badge up">12 Receipts Issued</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-text">
+              <span>This Term Target</span>
+              <h2>₹ 14.8 L</h2>
+              <span class="kpi-badge up">82% Realized</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-text">
+              <span>Defaulters List</span>
+              <h2>18 Students</h2>
+              <span class="kpi-badge warn">₹ 72,000 Overdue</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="agenda-card">
+          <div class="section-heading" style="margin-top:0">
+            <h3>Recent Fee Transactions</h3>
+            <a href="/erp/web/fee-management.html">Full Ledger →</a>
+          </div>
+          <div class="timeline-list">
+            <div class="timeline-item">
+              <div class="time-slot">10:14 AM</div>
+              <div class="period-info">
+                <b>RCPT #1092 • Aarav Verma (Class 10-A)</b>
+                <small>₹ 4,500 via UPI (Google Pay) • Term 2 Tuition Fee</small>
+              </div>
+              <span class="kpi-badge up">Paid</span>
+            </div>
+            <div class="timeline-item">
+              <div class="time-slot">09:48 AM</div>
+              <div class="period-info">
+                <b>RCPT #1091 • Ananya Sethi (Class 8-B)</b>
+                <small>₹ 6,200 via Cash Counter • Tuition + Transport</small>
+              </div>
+              <span class="kpi-badge up">Paid</span>
+            </div>
+            <div class="timeline-item">
+              <div class="time-slot">Yesterday</div>
+              <div class="period-info">
+                <b>RCPT #1090 • Rohan Gupta (Class 6-A)</b>
+                <small>₹ 3,800 via NetBanking • Term 2 Tuition</small>
+              </div>
+              <span class="kpi-badge up">Paid</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 4: DIRECTORY
+           ==================================================================== -->
+      <section id="tab-directory" class="tab-pane">
+        <div class="section-heading">
+          <h3>Student &amp; Staff Directory</h3>
+          <a href="/erp/web/student-enrollment.html">＋ Enroll Student</a>
+        </div>
+
+        <div class="form-group">
+          <input type="search" class="input-field" id="dirSearch" placeholder="🔍 Search student name, roll no, or teacher…" oninput="filterDirectory()">
+        </div>
+
+        <div class="timeline-list" id="dirList">
+          <div class="timeline-item">
+            <div class="user-avatar" style="width:38px;height:38px;font-size:13px">AV</div>
+            <div class="period-info">
+              <b>Aarav Verma</b>
+              <small>Roll #12 • Class 10-A • Parent: Manoj Verma (+91 9876543210)</small>
+            </div>
+            <button class="btn-cta" style="width:auto;padding:6px 12px;background:#25d366" onclick="window.open('https://wa.me/919876543210')">WhatsApp</button>
+          </div>
+
+          <div class="timeline-item">
+            <div class="user-avatar" style="width:38px;height:38px;font-size:13px;background:var(--primary-gradient)">AS</div>
+            <div class="period-info">
+              <b>Ananya Sethi</b>
+              <small>Roll #04 • Class 8-B • Parent: Sunita Sethi (+91 9811223344)</small>
+            </div>
+            <button class="btn-cta" style="width:auto;padding:6px 12px;background:#25d366" onclick="window.open('https://wa.me/919811223344')">WhatsApp</button>
+          </div>
+
+          <div class="timeline-item">
+            <div class="user-avatar" style="width:38px;height:38px;font-size:13px;background:linear-gradient(135deg,#f59e0b,#d97706)">RK</div>
+            <div class="period-info">
+              <b>Rajesh Kumar (Teacher)</b>
+              <small>Mathematics HOD • Staff ID: STF-102 • (+91 9899001122)</small>
+            </div>
+            <button class="btn-cta" style="width:auto;padding:6px 12px;background:#4f46e5" onclick="location.href='tel:+919899001122'">Call</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 5: MORE / SETTINGS / SUPER ADMIN
+           ==================================================================== -->
+      <section id="tab-more" class="tab-pane">
+        <div class="section-heading">
+          <h3>System &amp; Administration</h3>
+        </div>
+
+        <div class="quick-action-grid" style="grid-template-columns:repeat(2,1fr)">
+          <a class="action-tile" href="/erp/web/super-admin-schools.html">
+            <div class="tile-icon-box" style="background:var(--primary-gradient)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg></div>
+            <strong>Schools Control Center</strong>
+            <span>Super Admin multi-school portal</span>
+          </a>
+
+          <a class="action-tile" href="/erp/web/local-storage.html">
+            <div class="tile-icon-box" style="background:#06b6d4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg></div>
+            <strong>Local PC &amp; NAS Storage</strong>
+            <span>Offline secure backup connector</span>
+          </a>
+
+          <div class="action-tile" onclick="triggerSync()">
+            <div class="tile-icon-box" style="background:#10b981"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>
+            <strong>Sync Cloud Database</strong>
+            <span>Push outbox changes immediately</span>
+          </div>
+
+          <div class="action-tile btn-logout">
+            <div class="tile-icon-box" style="background:#ef4444"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg></div>
+            <strong>Sign Out</strong>
+            <span>Exit current ERP session</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       Mobile Bottom Navigation Bar (5 Fixed Tabs)
+       ======================================================================== -->
+  <nav class="app-bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="bnav-tab active" data-tab="home" onclick="AnviDashboard.switchTab('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        <span>Home</span>
+      </button>
+
+      <button class="bnav-tab" data-tab="academics" onclick="AnviDashboard.switchTab('academics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+        <span>Academics</span>
+      </button>
+
+      <!-- Center FAB for Quick Action -->
+      <button class="bnav-fab" onclick="AnviDashboard.openBottomSheet('sheetAttendance')" title="Quick Action">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+      </button>
+
+      <button class="bnav-tab" data-tab="finance" onclick="AnviDashboard.switchTab('finance')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0v8.25m0 0h19.5m-19.5 0v3.75m19.5-3.75V6m0 0h-.75a.75.75 0 01-.75-.75V4.5m0 1.5H3.75m16.5 0v1.5a.75.75 0 01-.75.75H4.5a.75.75 0 01-.75-.75V6m16.5 0V4.5M3.75 4.5H20.25"/></svg>
+        <span>Fees</span>
+      </button>
+
+      <button class="bnav-tab" data-tab="directory" onclick="AnviDashboard.switchTab('directory')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+        <span>Directory</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========================================================================
+       Bottom Sheets (Sliding Drawers for App Flows)
+       ======================================================================== -->
+  <div class="bottom-sheet-backdrop" id="sheetBackdrop" onclick="AnviDashboard.closeBottomSheet()"></div>
+
+  <!-- Sheet 1: Take Attendance -->
+  <div class="bottom-sheet" id="sheetAttendance">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">📋 Take Attendance</div>
+    <div class="sheet-subtitle">Select Class &amp; Section to mark daily attendance</div>
+    
+    <div class="form-group">
+      <label class="form-label">SELECT CLASS</label>
+      <select class="input-field" id="attClassSelect">
+        <option>Grade 10 - Section A</option>
+        <option>Grade 10 - Section B</option>
+        <option>Grade 9 - Section A</option>
+        <option>Grade 8 - Section A</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">DATE</label>
+      <input type="date" class="input-field" value="2026-09-22">
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn-cta" style="background:#10b981" onclick="alert('All marked Present!');AnviDashboard.closeBottomSheet()">✓ Mark All Present</button>
+      <button class="btn-cta" onclick="location.href='/erp/web/attendance.html'">Open Full Register</button>
+    </div>
+  </div>
+
+  <!-- Sheet 2: Fee Counter -->
+  <div class="bottom-sheet" id="sheetFee">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">💳 Quick Fee Counter</div>
+    <div class="sheet-subtitle">Issue instant receipt with print &amp; WhatsApp copy</div>
+    
+    <div class="form-group">
+      <label class="form-label">STUDENT ADMISSION NO / NAME</label>
+      <input type="text" class="input-field" placeholder="e.g. ADM1042 or Aarav Verma">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">AMOUNT (₹)</label>
+      <input type="number" class="input-field" placeholder="e.g. 4500">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">PAYMENT MODE</label>
+      <select class="input-field">
+        <option>UPI / QR Scan</option>
+        <option>Cash Counter</option>
+        <option>Debit / Credit Card</option>
+        <option>Bank Cheque</option>
+      </select>
+    </div>
+
+    <button class="btn-cta" onclick="alert('Receipt #1093 generated successfully!');AnviDashboard.closeBottomSheet()">Issue &amp; Send WhatsApp Receipt</button>
+  </div>
+
+  <!-- Sheet 3: WhatsApp Broadcast -->
+  <div class="bottom-sheet" id="sheetBroadcast">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">📢 WhatsApp Notice Broadcast</div>
+    <div class="sheet-subtitle">Send official notice or fee reminder to parents</div>
+    
+    <div class="form-group">
+      <label class="form-label">TARGET RECIPIENTS</label>
+      <select class="input-field">
+        <option>All School Parents (427 students)</option>
+        <option>Fee Defaulters Only (18 students)</option>
+        <option>Grade 10 Parents Only</option>
+        <option>All Teaching Staff</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">MESSAGE TEXT</label>
+      <textarea class="input-field" rows="3" placeholder="Dear Parents, Please note that school will close early tomorrow due to staff meeting..."></textarea>
+    </div>
+
+    <button class="btn-cta" style="background:linear-gradient(135deg,#25d366,#128c7e)" onclick="alert('Broadcast sent via WhatsApp Business API!');AnviDashboard.closeBottomSheet()">Send Broadcast</button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/erp/web/api.js"></script>
+  <script src="/erp/web/offline-sync.js"></script>
+  <script src="/erp/web/shared/js/dashboard.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = AnviDashboard.checkAuth();
+      if (!user) return;
+      AnviDashboard.setupHeader(user);
+
+      const nameEl = document.getElementById('userNameDisplay');
+      if (nameEl) nameEl.textContent = user.name || user.email.split('@')[0];
+
+      const greetingEl = document.getElementById('welcomeGreeting');
+      const hour = new Date().getHours();
+      const timeGreeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+      if (greetingEl) greetingEl.textContent = `${timeGreeting}, ${user.name || 'Admin'} 👋`;
+
+      // Load organization info if available
+      try {
+        if (window.LSKERP) {
+          const org = await LSKERP.request('/api/organization').catch(() => null);
+          if (org && org.school) {
+            const displayName = org.school.displayName || org.school.name;
+            document.querySelectorAll('.school-name-display').forEach(el => el.textContent = displayName);
+            const branchLabel = document.getElementById('mobileBranchLabel');
+            if (branchLabel && org.branches && org.branches.length > 0) {
+              branchLabel.textContent = org.branches[0].name;
+            }
+          }
+        }
+      } catch (_) {}
+    });
+
+    async function triggerSync() {
+      AnviDashboard.triggerHaptic(50);
+      const b = document.getElementById('syncBadgeMobile');
+      if (b) b.textContent = 'Syncing…';
+      try {
+        if (window.AnviMitraOfflineSync) {
+          await AnviMitraOfflineSync.sync();
+        }
+        alert('Cloud sync complete: All records updated.');
+      } catch (err) {
+        alert('Sync error: ' + err.message);
+      } finally {
+        if (b) b.innerHTML = '<span class="sync-dot"></span> Synced';
+      }
+    }
+
+    function filterDirectory() {
+      const query = (document.getElementById('dirSearch').value || '').toLowerCase();
+      document.querySelectorAll('#dirList .timeline-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

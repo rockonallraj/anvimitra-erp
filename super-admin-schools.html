@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Anvi Mitra ERP • Super Admin Multi-School Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/erp/web/shared/css/dashboard.css">
+<style>
+  .sa-wrap { max-width: 1300px; margin: 0 auto; padding: 24px; }
+  .sa-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px; }
+  .sa-brand { display: flex; align-items: center; gap: 12px; }
+  .sa-brand a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--text-muted); font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .sa-brand h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  .sa-actions { display: flex; gap: 10px; }
+  .school-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 18px; }
+  .school-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; justify-content: space-between; gap: 16px; }
+  .school-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: #cbd5e1; }
+  .sc-header { display: flex; align-items: flex-start; gap: 14px; }
+  .sc-logo { width: 52px; height: 52px; border-radius: var(--radius-md); background: var(--primary-gradient); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 18px; object-fit: contain; flex-shrink: 0; }
+  .sc-meta { flex: 1; min-width: 0; }
+  .sc-meta b { font-size: 16px; font-weight: 800; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sc-meta small { color: var(--text-muted); font-size: 12px; font-weight: 600; display: block; margin-top: 2px; }
+  .sc-badges { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .chip { padding: 3px 8px; border-radius: var(--radius-full); font-size: 10px; font-weight: 700; background: var(--surface-subtle); color: var(--text-muted); border: 1px solid var(--border); }
+  .chip.active { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+  .sc-body { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--surface-subtle); padding: 10px 14px; border-radius: var(--radius-md); font-size: 12px; }
+  .sc-body span { color: var(--text-muted); font-size: 11px; display: block; }
+  .sc-body strong { font-weight: 700; word-break: break-all; }
+  .sc-footer { display: flex; gap: 8px; }
+  .filter-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-bar input { flex: 1; min-width: 250px; }
+  .modal-stepper { display: grid; grid-template-columns: 1fr; gap: 16px; }
+</style>
+</head>
+<body>
+
+<div class="sa-wrap">
+  <!-- Top Navigation & Title -->
+  <div class="sa-topbar">
+    <div class="sa-brand">
+      <div class="brand-icon" style="width:48px;height:48px;font-size:22px">AM</div>
+      <div>
+        <a href="/erp/web/portal-dashboard.html">← Back to Dashboard Hub</a>
+        <h1>Super Admin Control Center</h1>
+      </div>
+    </div>
+    <div class="sa-actions">
+      <button class="btn-cta" style="width:auto;padding:10px 20px" onclick="openAdd()">＋ Provision New School</button>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card">
+      <div class="kpi-text">
+        <span>Total Schools</span>
+        <h2 id="total">1</h2>
+        <span class="kpi-badge up">Enterprise Tenants</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-text">
+        <span>Active Schools</span>
+        <h2 id="active">1</h2>
+        <span class="kpi-badge up">● 100% Operational</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-text">
+        <span>Configured Apps</span>
+        <h2 id="apps">1</h2>
+        <span class="kpi-badge">Android &amp; iOS</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-text">
+        <span>Central API Status</span>
+        <h2 style="font-size:20px;color:#10b981">ONLINE</h2>
+        <span class="kpi-badge up">Edge Standalone Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="filter-bar">
+    <input type="search" class="input-field" id="q" placeholder="🔍 Search schools by name, code, slug, or domain…" oninput="render()">
+    <button class="icon-btn" onclick="load()" title="Reload Schools">
+      <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+    </button>
+  </div>
+
+  <!-- School Cards Grid -->
+  <div id="list" class="school-card-grid">Loading school tenants…</div>
+</div>
+
+<!-- Add School Bottom Sheet Modal -->
+<div class="bottom-sheet-backdrop" id="sheetBackdrop" onclick="closeAdd()"></div>
+<div class="bottom-sheet" id="sheetAdd" style="max-width:720px">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">🏢 Provision New School Tenant</div>
+  <div class="sheet-subtitle">Atomically provisions school, main branch, mobile branding, and administrator.</div>
+
+  <form id="form">
+    <div class="section-heading" style="margin:10px 0 8px"><h3>1. School Identity</h3></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">SCHOOL NAME *</label>
+        <input name="name" class="input-field" placeholder="e.g. LSK International Academy" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">SCHOOL CODE *</label>
+        <input name="code" class="input-field" placeholder="e.g. LSK" required>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">DISPLAY NAME</label>
+        <input name="displayName" class="input-field" placeholder="Public branding name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">LOGO URL</label>
+        <input name="logoUrl" class="input-field" placeholder="https://…/logo.png">
+      </div>
+    </div>
+
+    <div class="section-heading" style="margin:16px 0 8px"><h3>2. Mobile App &amp; API Configuration</h3></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">APP SLUG *</label>
+        <input name="appSlug" class="input-field" placeholder="lsk-academy" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">APP NAME</label>
+        <input name="appName" class="input-field" placeholder="LSK Academy App">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">API BASE URL</label>
+      <input name="apiBaseUrl" class="input-field" value="https://anvimitra-erp.rv5646718.workers.dev">
+    </div>
+
+    <div class="section-heading" style="margin:16px 0 8px"><h3>3. School Administrator</h3></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group">
+        <label class="form-label">ADMIN EMAIL</label>
+        <input name="adminEmail" type="email" class="input-field" placeholder="principal@school.edu">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TEMPORARY PASSWORD *</label>
+        <input name="adminPassword" type="password" class="input-field" minlength="6" value="Admin@12345" required>
+      </div>
+    </div>
+
+    <div id="msg" style="display:none;padding:10px;border-radius:var(--radius-md);margin:14px 0;font-size:13px"></div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button type="button" class="btn-cta" style="background:#f1f5f9;color:#334155;box-shadow:none" onclick="closeAdd()">Cancel</button>
+      <button type="submit" class="btn-cta" id="createBtn">🚀 Create School Tenant</button>
+    </div>
+  </form>
+</div>
+
+<script>
+let schools = [];
+const token = () => localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || sessionStorage.getItem('lsk_access_token') || '';
+const headers = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token() });
+const esc = (x) => String(x ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+async function api(path, opt = {}) {
+  const r = await fetch(path, Object.assign({}, opt, { headers: Object.assign(headers(), opt.headers || {}) }));
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw Error(d.error || 'Request failed');
+  return d;
+}
+
+function render() {
+  const q = (document.querySelector('#q').value || '').toLowerCase();
+  const filtered = schools.filter(s =>
+    (s.name + ' ' + s.code + ' ' + (s.displayName || '') + ' ' + (s.appSlug || '')).toLowerCase().includes(q)
+  );
+
+  const container = document.getElementById('list');
+  if (!filtered.length) {
+    container.innerHTML = '<div class="kpi-card" style="grid-column:1/-1;text-align:center;padding:40px"><p style="color:var(--text-muted)">No schools found matching your search.</p></div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(s => `
+    <div class="school-card">
+      <div>
+        <div class="sc-header">
+          <div class="sc-logo">${esc((s.code || 'S').substring(0, 3))}</div>
+          <div class="sc-meta">
+            <b>${esc(s.displayName || s.name)}</b>
+            <small>Code: ${esc(s.code)} • ${esc(s.appSlug || 'default')}</small>
+            <div class="sc-badges">
+              <span class="chip active">● ${esc(s.status || 'Active')}</span>
+              <span class="chip">Main Campus</span>
+              <span class="chip">App Configured</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sc-body" style="margin-top:14px">
+          <div>
+            <span>TIMEZONE</span>
+            <strong>${esc(s.timezone || 'Asia/Kolkata')}</strong>
+          </div>
+          <div>
+            <span>CURRENCY</span>
+            <strong>${esc(s.currencyCode || 'INR')}</strong>
+          </div>
+          <div style="grid-column:1/-1">
+            <span>API SERVER</span>
+            <strong>${esc(s.apiBaseUrl || 'https://anvimitra-erp.rv5646718.workers.dev')}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="sc-footer">
+        <button class="btn-cta" style="flex:1;font-size:13px;padding:9px" onclick="launchSchool('${s.id}', '${s.code}')">Launch Dashboard →</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('total').textContent = schools.length;
+  document.getElementById('active').textContent = schools.filter(x => x.status === 'active').length;
+  document.getElementById('apps').textContent = schools.filter(x => x.appSlug).length;
+}
+
+function launchSchool(id, code) {
+  sessionStorage.setItem('lsk_school_id', id);
+  sessionStorage.setItem('lsk_school_code', code);
+  location.href = '/erp/web/portal-dashboard.html';
+}
+
+async function load() {
+  try {
+    const d = await api('/api/platform/schools');
+    schools = d.schools || [];
+    render();
+  } catch (e) {
+    document.getElementById('list').innerHTML = `<div class="kpi-card" style="grid-column:1/-1;color:#ef4444;padding:30px">Error loading schools: ${esc(e.message)}</div>`;
+  }
+}
+
+function openAdd() {
+  document.getElementById('sheetBackdrop').classList.add('active');
+  document.getElementById('sheetAdd').classList.add('active');
+  const msg = document.getElementById('msg');
+  msg.style.display = 'none';
+}
+
+function closeAdd() {
+  document.getElementById('sheetBackdrop').classList.remove('active');
+  document.getElementById('sheetAdd').classList.remove('active');
+}
+
+document.getElementById('form').onsubmit = async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById('msg');
+  const btn = document.getElementById('createBtn');
+  msg.style.display = 'block';
+  msg.style.background = '#eef3ff';
+  msg.style.color = '#4f46e5';
+  msg.textContent = 'Provisioning school tenant and administrator…';
+  btn.disabled = true;
+
+  const b = Object.fromEntries(new FormData(e.target));
+  if (!b.displayName) b.displayName = b.name;
+  if (!b.appName) b.appName = b.displayName;
+
+  try {
+    const d = await api('/api/platform/schools', { method: 'POST', body: JSON.stringify(b) });
+    msg.style.background = '#ecfdf5';
+    msg.style.color = '#047857';
+    msg.textContent = '✓ School provisioned successfully!';
+    schools.unshift(d.school);
+    render();
+    setTimeout(() => {
+      closeAdd();
+      e.target.reset();
+      btn.disabled = false;
+    }, 700);
+  } catch (x) {
+    msg.style.background = '#fff0f0';
+    msg.style.color = '#ef4444';
+    msg.textContent = x.message;
+    btn.disabled = false;
+  }
+};
+
+load();
+</script>
+</body>
+</html>
